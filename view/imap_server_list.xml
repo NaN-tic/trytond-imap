@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- The COPYRIGHT file at the top level of this repository contains the full
+     copyright notices and license terms. -->
+<tree string="IMAP Server">
+    <field name="name"/>
+    <field name="email"/>
+    <field name="host"/>
+    <field name="port"/>
+    <field name="username"/>
+    <field name="ssl"/>
+    <field name="state"/>
+</tree>
