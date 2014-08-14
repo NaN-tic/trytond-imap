@@ -63,20 +63,20 @@
             <field name="perm_create" eval="True"/>
             <field name="perm_delete" eval="True"/>
         </record>
-        <!-- Menus -->
-        <menuitem id="menu_imap" name="IMAP" parent="ir.menu_administration"
-            sequence="200" />
 
-          <record model="ir.ui.menu-res.group" id="menu_imap_group_imap">
+        <menuitem id="menu_imap" name="IMAP" parent="ir.menu_administration"/>
+
+        <record model="ir.ui.menu-res.group" id="menu_imap_group_imap">
             <field name="menu" ref="menu_imap"/>
             <field name="group" ref="group_imap"/>
-          </record>
+        </record>
 
-          <record model="ir.ui.menu-res.group" id="menu_imap_group_imap_admin">
+        <record model="ir.ui.menu-res.group" id="menu_imap_group_imap_admin">
             <field name="menu" ref="menu_imap"/>
             <field name="group" ref="group_imap"/>
-          </record>
+        </record>
 
-        <menuitem action="act_imap_server" id="menu_imap_server" parent="menu_imap" sequence="1" name="IMAP Server"/>
+        <menuitem action="act_imap_server" id="menu_imap_server"
+            parent="menu_imap" sequence="1" name="IMAP Server"/>
     </data>
 </tryton>

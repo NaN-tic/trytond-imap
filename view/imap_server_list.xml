@@ -3,10 +3,11 @@
      copyright notices and license terms. -->
 <tree string="IMAP Server">
     <field name="name"/>
-    <field name="email"/>
     <field name="host"/>
-    <field name="port"/>
-    <field name="username"/>
     <field name="ssl"/>
+    <field name="port"/>
+    <field name="email"/>
+    <field name="folder"/>
+    <field name="user"/>
     <field name="state"/>
 </tree>

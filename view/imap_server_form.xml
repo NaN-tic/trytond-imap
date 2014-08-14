@@ -1,26 +1,34 @@
 <?xml version="1.0"?>
 <!-- The COPYRIGHT file at the top level of this repository contains the full
      copyright notices and license terms. -->
-<form string="IMAP Server">
+<form string="IMAP Server" col="6">
     <label name="name"/>
     <field name="name"/>
-    <label name="email"/>
-    <field name="email"/>
+    <separator id="server_info" string="Server Information" colspan="6"/>
     <label name="host"/>
     <field name="host"/>
-    <group id="port_ssl" colspan="2">
-        <label name="port"/>
-        <field name="port"/>
-        <label name="ssl"/>
-        <field name="ssl"/>
-    </group>
-    <label name="username"/>
-    <field name="username"/>
+    <label name="ssl"/>
+    <field name="ssl"/>
+    <label name="port"/>
+    <field name="port"/>
+    <label name="folder"/>
+    <field name="folder"/>
+    <label name="timeout"/>
+    <field name="timeout"/>
+    <label name="criterion"/>
+    <field name="criterion"/>
+    <newline/>
+    <separator id="user" string="Login Information" colspan="6"/>
+    <label name="email"/>
+    <field name="email"/>
+    <label name="user"/>
+    <field name="user"/>
     <label name="password"/>
-    <field name="password" widget="sha"/>
+    <field name="password" widget="password"/>
+    <newline/>
     <label name="state"/>
     <field name="state"/>
-    <group id="buttons" colspan="2">
+    <group col="4" colspan="3" id="buttons">
         <button name="draft" string="Draft" icon="tryton-clear"/>
         <button name="done" string="Confirm" icon="tryton-go-next"/>
         <button name="test" string="Test Connection" icon="tryton-ok"/>
