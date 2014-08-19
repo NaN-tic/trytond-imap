@@ -77,17 +77,17 @@ class IMAPServer(ModelSQL, ModelView):
                 'test_details': 'IMAP test connection Details:\n%s',
                 'connection_error': 'IMAP connection test failed.',
                 'general_error': 'Error IMAP Server:\n%s',
-                'no_login': ('Error IMAP Server:\nLogin could not be '
-                    'possible'),
-                'search_error': ('Error IMAP Server:\nCould not get %s '
-                    'messages'),
-                'check_folder': 'Don\'t available folder in Email Server.',
+                'login_error': ('Error IMAP Server:\nLogin with user "%s" '
+                    'could not be possible.\n\n%s'),
+                'select_error': ('Error IMAP Server:\nCould not select "%s" '
+                    'mailbox.\n\n%s'),
+                'search_error': ('Error IMAP Server:\nCould not search "%s" '
+                    'messages.\n\n%s'),
+                'fetch_error': ('Error IMAP Server:\nCould not get id "%s" '
+                    'messages.\n\n%s'),
                 })
         cls._buttons.update({
             'test': {},
-            'get_mails': {
-                'invisible': Eval('state') == 'draft',
-                },
             'draft': {
                 'invisible': Eval('state') == 'draft',
                 },
@@ -153,33 +153,9 @@ class IMAPServer(ModelSQL, ModelView):
     def test(cls, servers):
         "Checks IMAP credentials and confirms if connection works"
         for server in servers:
-            try:
-                imapper = cls.connect(server)
-                imapper.logout()
-            except Exception, message:
-                cls.raise_user_error('test_details', message)
-            except:
-                cls.raise_user_error('connection_error')
+            imapper = cls.connect(server)
+            imapper.logout()
             cls.raise_user_error('connection_successful', server.rec_name)
-
-    @classmethod
-    @ModelView.button
-    def get_emails(cls, servers):
-        """Get emails from server and return a list with all mails and it's
-            attachments."""
-        messages = []
-        for server in servers:
-            try:
-                imapper = cls.connect(server)
-                messages = cls.fetch(imapper, server)
-            except Exception, e:
-                cls.raise_user_error('general_error', e)
-            logging.getLogger('IMAPServer').info(
-                    'Process %s email(s) from %s' % (
-                    len(messages),
-                    server.name,
-                    ))
-        return messages
 
     @classmethod
     def connect(cls, server, keyfile=None, certfile=None, ca_certs=None,
@@ -213,19 +189,20 @@ class IMAPServer(ModelSQL, ModelView):
     def login(cls, imapper, user, password):
         try:
             status, data = imapper.login(user, password)
-            if status == 'OK':
-                return imapper
-            else:
-                imapper.logout()
-                cls.raise_user_error('imap_no_login')
         except Exception, e:
             imapper.logout()
-            cls.raise_user_error('general_error', e)
+            status = 'NO'
+            data = e
+        finally:
+            if status != 'OK':
+                imapper.logout()
+                cls.raise_user_error('login_error', (user, data))
+        return imapper
 
     @classmethod
     def fetch(cls, imapper, server, readonly=False, charset=None,
         parts='(UID RFC822)'):
-        emailids = cls.search_mails(imapper, server.mailbox, readonly, charset,
+        emailids = cls.search_mails(imapper, server.folder, readonly, charset,
             server.criterion)
         result = {}
         for emailid in emailids:
@@ -239,30 +216,38 @@ class IMAPServer(ModelSQL, ModelView):
         readonly=False, charset=None, criterion='ALL'):
         try:
             status, data = imapper.select(mailbox, readonly)
-            print "------- status_select:", status
-            print "------- data_select:", data
-            status, data = imapper.search(charset, criterion)
-            print "------- status_search:", status
-            print "------- data_search:", data
-            if status == 'OK':
-                return data[0].split()
-            else:
-                imapper.close()
-                imapper.logout()
-                cls.raise_user_error('imap_search_error', criterion)
         except Exception, e:
             imapper.logout()
-            cls.raise_user_error('general_error', e)
+            status = 'NO'
+            data = e
+        finally:
+            if status != 'OK':
+                imapper.logout()
+                cls.raise_user_error('select_error', (mailbox, data))
+        try:
+            status, data = imapper.search(charset, criterion)
+        except Exception, e:
+            imapper.logout()
+            status = 'NO'
+            data = e
+        finally:
+            if status != 'OK':
+                imapper.logout()
+                cls.raise_user_error('search_error', (criterion, data))
+        return data[0].split()
 
     @classmethod
     def fetch_mail(cls, imapper, emailid, parts='(UID RFC822)'):
+        result = {}
         try:
-            result = {}
             status, data = imapper.fetch(emailid, parts)
-            if status == 'OK':
-                result[emailid] = data
-            return result
         except Exception, e:
-            imapper.close()
             imapper.logout()
-            cls.raise_user_error('general_error', e)
+            status = 'NO'
+            data = e
+        finally:
+            if status != 'OK':
+                imapper.logout()
+                cls.raise_user_error('fetch_error', (emailid, data))
+        result[emailid] = data
+        return result

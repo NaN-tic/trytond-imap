@@ -28,7 +28,7 @@
     <newline/>
     <label name="state"/>
     <field name="state"/>
-    <group col="4" colspan="3" id="buttons">
+    <group colspan="4" col="3" id="buttons">
         <button name="draft" string="Draft" icon="tryton-clear"/>
         <button name="done" string="Confirm" icon="tryton-go-next"/>
         <button name="test" string="Test Connection" icon="tryton-ok"/>
