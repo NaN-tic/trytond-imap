@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
+<!-- The COPYRIGHT file at the top level of this repository contains the full
+     copyright notices and license terms. -->
 <tryton>
     <data>
-
         <record model="res.group" id="group_imap_admin">
             <field name="name">IMAP Administration</field>
         </record>
@@ -64,6 +65,7 @@
             <field name="perm_delete" eval="True"/>
         </record>
 
+        <!-- menus -->
         <menuitem id="menu_imap" name="IMAP" parent="ir.menu_administration"/>
 
         <record model="ir.ui.menu-res.group" id="menu_imap_group_imap">
