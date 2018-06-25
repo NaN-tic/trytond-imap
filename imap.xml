@@ -65,6 +65,51 @@
             <field name="perm_delete" eval="True"/>
         </record>
 
+
+        <record model="ir.model.button" id="imap_test_button">
+            <field name="name">test</field>
+            <field name="string">Test</field>
+            <field name="model" search="[('model', '=', 'imap.server')]"/>
+        </record>
+        <record model="ir.model.button-res.group"
+            id="imap_test_button_group">
+            <field name="button" ref="imap_test_button"/>
+            <field name="group" ref="access_imap_server_admin"/>
+        </record>
+
+        <record model="ir.model.button" id="imap_draft_button">
+            <field name="name">draft</field>
+            <field name="string">Draft</field>
+            <field name="model" search="[('model', '=', 'imap.server')]"/>
+        </record>
+        <record model="ir.model.button-res.group"
+            id="imap_draft_button_group">
+            <field name="button" ref="imap_draft_button"/>
+            <field name="group" ref="access_imap_server_admin"/>
+        </record>
+
+        <record model="ir.model.button" id="imap_done_button">
+            <field name="name">done</field>
+            <field name="string">Done</field>
+            <field name="model" search="[('model', '=', 'imap.server')]"/>
+        </record>
+        <record model="ir.model.button-res.group"
+            id="imap_done_button_group">
+            <field name="button" ref="imap_done_button"/>
+            <field name="group" ref="access_imap_server_admin"/>
+        </record>
+
+        <record model="ir.model.button" id="imap_get_mails_button">
+            <field name="name">get_mails</field>
+            <field name="string">Get Mails</field>
+            <field name="model" search="[('model', '=', 'imap.server')]"/>
+        </record>
+        <record model="ir.model.button-res.group"
+            id="imap_get_mails_button_group">
+            <field name="button" ref="imap_get_mails_button"/>
+            <field name="group" ref="access_imap_server_admin"/>
+        </record>
+
         <!-- menus -->
         <menuitem id="menu_imap" name="IMAP" parent="ir.menu_administration"/>
 
