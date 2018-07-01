@@ -74,7 +74,7 @@
         <record model="ir.model.button-res.group"
             id="imap_test_button_group">
             <field name="button" ref="imap_test_button"/>
-            <field name="group" ref="access_imap_server_admin"/>
+            <field name="group" ref="group_imap_admin"/>
         </record>
 
         <record model="ir.model.button" id="imap_draft_button">
@@ -85,7 +85,7 @@
         <record model="ir.model.button-res.group"
             id="imap_draft_button_group">
             <field name="button" ref="imap_draft_button"/>
-            <field name="group" ref="access_imap_server_admin"/>
+            <field name="group" ref="group_imap_admin"/>
         </record>
 
         <record model="ir.model.button" id="imap_done_button">
@@ -96,7 +96,7 @@
         <record model="ir.model.button-res.group"
             id="imap_done_button_group">
             <field name="button" ref="imap_done_button"/>
-            <field name="group" ref="access_imap_server_admin"/>
+            <field name="group" ref="group_imap_admin"/>
         </record>
 
         <record model="ir.model.button" id="imap_get_mails_button">
@@ -107,7 +107,7 @@
         <record model="ir.model.button-res.group"
             id="imap_get_mails_button_group">
             <field name="button" ref="imap_get_mails_button"/>
-            <field name="group" ref="access_imap_server_admin"/>
+            <field name="group" ref="group_imap_admin"/>
         </record>
 
         <!-- menus -->
