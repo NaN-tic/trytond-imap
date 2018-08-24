@@ -183,14 +183,14 @@ class IMAPServer(ModelSQL, ModelView):
                 return imaplib2.IMAP4(host=str(host), port=int(port),
                     debug=debug, debug_file=debug_file, identifier=identifier,
                     timeout=timeout, debug_buf_lvl=debug_buf_lvl)
-        except Exception, e:
+        except Exception as e:
             cls.raise_user_error('general_error', e)
 
     @classmethod
     def login(cls, imapper, user, password):
         try:
             status, data = imapper.login(user, password)
-        except Exception, e:
+        except Exception as e:
             imapper.logout()
             status = 'NO'
             data = e
@@ -217,7 +217,7 @@ class IMAPServer(ModelSQL, ModelView):
         readonly=False, charset=None, criterion='ALL'):
         try:
             status, data = imapper.select(mailbox, readonly)
-        except Exception, e:
+        except Exception as e:
             imapper.logout()
             status = 'NO'
             data = e
@@ -227,7 +227,7 @@ class IMAPServer(ModelSQL, ModelView):
                 cls.raise_user_error('select_error', (mailbox, data))
         try:
             status, data = imapper.search(charset, criterion)
-        except Exception, e:
+        except Exception as e:
             imapper.logout()
             status = 'NO'
             data = e
@@ -242,7 +242,7 @@ class IMAPServer(ModelSQL, ModelView):
         result = {}
         try:
             status, data = imapper.fetch(emailid, parts)
-        except Exception, e:
+        except Exception as e:
             imapper.logout()
             status = 'NO'
             data = e
