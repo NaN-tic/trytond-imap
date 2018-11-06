@@ -1,17 +1,20 @@
 # The COPYRIGHT file at the top level of this repository contains the full
 # copyright notices and license terms.
 from trytond.model import ModelView, ModelSQL, fields, Unique
-from trytond.pyson import Eval
-
+from trytond.pyson import Eval, Bool
+import socket
+import datetime
 import logging
-try:
-    import imaplib2
-except ImportError:
-    message = 'Unable to import imaplib2'
-    logging.getLogger('GetmailServer').error(message)
-    raise Exception(message)
+
+# Use impalib instead imaplib2 beacuse imaplib2 doesn't support to set the
+# connection timeout
+import imaplib2
 
 __all__ = ['IMAPServer']
+
+_IMAP_DATE_FORMAT = "%d-%b-%Y"
+
+logger = logging.getLogger(__name__)
 
 
 class IMAPServer(ModelSQL, ModelView):
@@ -43,9 +46,8 @@ class IMAPServer(ModelSQL, ModelView):
     criterion = fields.Char('Criterion', required=True,
         states={
             'readonly': (Eval('state') != 'draft'),
-            }, help=('The criteria to filter when dowload messages. By '
-                'default is only take the unread mesages, but it is possible '
-                'to take "ALL"'))
+            'invisible': Bool(Eval('search_mode') != 'custom'),
+            }, depends=['state', 'search_mode'])
     email = fields.Char('Email', required=True,
         states={
             'readonly': (Eval('state') != 'draft'),
@@ -63,6 +65,30 @@ class IMAPServer(ModelSQL, ModelView):
             ('draft', 'Draft'),
             ('done', 'Done'),
             ], 'State', readonly=True, required=True)
+
+    search_mode = fields.Selection([
+            ('unseen', 'Unseen'),
+            ('interval', 'Time Interval'),
+            ('custom', 'Custom')
+            ], 'Search Mode', select=True,
+        states={
+            'readonly': (Eval('state') != 'draft'),
+            }, depends=['state', 'search_mode'],
+        help='The criteria to filter when download messages. By '
+            'default is only take the unread mesages, but it is possible '
+            'to take a time interval or a custom selection')
+
+    last_retrieve_date = fields.Date('Last Retrieve Date',
+        states={
+                'invisible': Bool(Eval('search_mode') != 'interval'),
+                'readonly': (Eval('state') != 'draft'),
+                }, depends=['state', 'search_mode'])
+    offset = fields.Integer('Days Offset',
+        states={
+                'invisible': Bool(Eval('search_mode') != 'interval'),
+                'readonly': (Eval('state') != 'draft'),
+                }, depends=['state', 'search_mode'])
+    readonly = fields.Function(fields.Boolean('Read Only'), 'get_readonly')
 
     @classmethod
     def __setup__(cls):
@@ -98,6 +124,14 @@ class IMAPServer(ModelSQL, ModelView):
             })
 
     @staticmethod
+    def default_search_mode():
+        return 'unseen'
+
+    @staticmethod
+    def default_offset():
+        return 1
+
+    @staticmethod
     def default_port():
         return 993
 
@@ -111,7 +145,7 @@ class IMAPServer(ModelSQL, ModelView):
 
     @staticmethod
     def default_criterion():
-        return 'UNSEEN'
+        return 'ALL'
 
     @staticmethod
     def default_ssl():
@@ -128,6 +162,21 @@ class IMAPServer(ModelSQL, ModelView):
     @fields.depends('email')
     def on_change_with_user(self):
         return self.email or ""
+
+    @fields.depends('search_mode', 'last_retrieve_date', 'offset')
+    def on_change_with_criterion(self, name=None):
+        if self.search_mode == 'unseen':
+            return 'UNSEEN'
+        if self.search_mode == 'interval':
+            if not self.last_retrieve_date:
+                return 'ALL'
+            offset = datetime.timedelta(days=self.offset or 0)
+            date_with_offset = self.last_retrieve_date - offset
+            return '(SINCE "%s")' % date_with_offset.strftime(
+                _IMAP_DATE_FORMAT)
+
+    def get_readonly(self, name):
+        return True if self.search_mode == 'interval' else None
 
     @classmethod
     @ModelView.button
@@ -159,96 +208,104 @@ class IMAPServer(ModelSQL, ModelView):
             cls.raise_user_error('connection_successful', server.rec_name)
 
     @classmethod
-    def connect(cls, server, keyfile=None, certfile=None, ca_certs=None,
-        cert_verify_cb=None, debug=0, debug_file=None, identifier=None,
-        debug_buf_lvl=None):
+    def connect(cls, server, keyfile=None, certfile=None,
+            debug=0, identifier=None):
         imapper = cls.get_server(server.host, server.port, server.ssl,
-            keyfile, certfile, ca_certs, cert_verify_cb, debug, debug_file,
-            identifier, server.timeout, debug_buf_lvl)
+            keyfile, certfile, debug, identifier, server.timeout)
         return cls.login(imapper, server.user.encode('UTF-8'),
             server.password.encode('UTF-8'))
 
     @classmethod
     def get_server(cls, host, port, ssl=False, keyfile=None,
-        certfile=None, ca_certs=None, cert_verify_cb=None, debug=0,
-        debug_file=None, identifier=None, timeout=120, debug_buf_lvl=None):
+            certfile=None, debug=0, identifier=None, timeout=120):
+        '''
+        Obtain an IMAP opened connection
+        '''
         try:
             if ssl:
                 return imaplib2.IMAP4_SSL(host=str(host), port=int(port),
-                    keyfile=keyfile, certfile=certfile, ca_certs=ca_certs,
-                    cert_verify_cb=cert_verify_cb, debug=debug,
-                    debug_file=debug_file, identifier=identifier,
-                    timeout=timeout, debug_buf_lvl=debug_buf_lvl)
+                    keyfile=keyfile, certfile=certfile, timeout=timeout)
             else:
                 return imaplib2.IMAP4(host=str(host), port=int(port),
-                    debug=debug, debug_file=debug_file, identifier=identifier,
-                    timeout=timeout, debug_buf_lvl=debug_buf_lvl)
-        except Exception, e:
+                    timeout=timeout)
+        except (imaplib2.IMAP4.error, imaplib2.IMAP4.abort,
+                imaplib2.IMAP4.readonly, socket.error), e:
             cls.raise_user_error('general_error', e)
 
     @classmethod
     def login(cls, imapper, user, password):
+        '''
+        Authenticates an imap connection
+        '''
         try:
             status, data = imapper.login(user, password)
-        except Exception, e:
-            imapper.logout()
+        except (imaplib2.IMAP4.error, imaplib2.IMAP4.abort,
+                imaplib2.IMAP4.readonly, socket.error), e:
             status = 'NO'
             data = e
-        finally:
-            if status != 'OK':
-                imapper.logout()
-                cls.raise_user_error('login_error', (user, data))
+        if status != 'OK':
+            imapper.logout()
+            data = e
+            cls.raise_user_error('login_error', (user, data))
         return imapper
 
-    @classmethod
-    def fetch(cls, imapper, server, readonly=False, charset=None,
-        parts='(UID RFC822)'):
-        emailids = cls.search_mails(imapper, server.folder, readonly, charset,
-            server.criterion)
-        result = {}
-        for emailid in emailids:
-            result.update(cls.fetch_mail(imapper, emailid, parts))
-        imapper.close()
-        imapper.logout()
-        return result
+    def fetch_ids(self, imapper):
+        '''
+        Obtain the next set of e-mail IDs according to the configuration
+        defined on the server object.
+        '''
+        status = None
+        try:
+            status, data = imapper.select(self.folder, self.readonly)
+        except (imaplib2.IMAP4.error, imaplib2.IMAP4.abort,
+                imaplib2.IMAP4.readonly, socket.error), e:
+            status = 'NO'
+            data = e
+        if status != 'OK':
+            imapper.logout()
+            self.raise_user_error('select_error', (self.folder, data))
 
-    @classmethod
-    def search_mails(cls, imapper, mailbox='INBOX',
-        readonly=False, charset=None, criterion='ALL'):
         try:
-            status, data = imapper.select(mailbox, readonly)
-        except Exception, e:
-            imapper.logout()
+            status, data = imapper.search(None, self.criterion)
+            self.last_retrieve_date = (
+                datetime.date.today() - datetime.timedelta(1))
+            self.save()
+        except (imaplib2.IMAP4.error, imaplib2.IMAP4.abort,
+                imaplib2.IMAP4.readonly, socket.error), e:
             status = 'NO'
             data = e
-        finally:
-            if status != 'OK':
-                imapper.logout()
-                cls.raise_user_error('select_error', (mailbox, data))
-        try:
-            status, data = imapper.search(charset, criterion)
-        except Exception, e:
+        if status != 'OK':
             imapper.logout()
-            status = 'NO'
-            data = e
-        finally:
-            if status != 'OK':
-                imapper.logout()
-                cls.raise_user_error('search_error', (criterion, data))
+            self.raise_user_error('search_error', (self.criterion, data))
         return data[0].split()
 
-    @classmethod
-    def fetch_mail(cls, imapper, emailid, parts='(UID RFC822)'):
+    def fetch_one(self, imapper, emailid, parts='(UID RFC822)'):
+        '''
+        Fetch the content of a single e-mail ID obtained using fetch_ids()
+        '''
         result = {}
         try:
             status, data = imapper.fetch(emailid, parts)
-        except Exception, e:
-            imapper.logout()
-            status = 'NO'
+        except (imaplib2.IMAP4.error, imaplib2.IMAP4.abort,
+                imaplib2.IMAP4.readonly, socket.error), e:
+            status = 'KO'
             data = e
-        finally:
-            if status != 'OK':
-                imapper.logout()
-                cls.raise_user_error('fetch_error', (emailid, data))
+        if status != 'OK':
+            imapper.logout()
+            self.raise_user_error('fetch_error', (emailid, data))
         result[emailid] = data
+        return result
+
+    def fetch(self, imapper, parts='(UID RFC822)'):
+        '''
+        Fetch the next set of e-mails according to the configuration defined
+        on the server object. It equivalent to calling fetch_ids() and calling
+        fetch_one() for each e-mail ID.
+        '''
+        emailids = self.fetch_ids(imapper)
+        result = {}
+        for emailid in emailids:
+            result.update(self.fetch_one(imapper, emailid, parts))
+        imapper.close()
+        imapper.logout()
         return result
