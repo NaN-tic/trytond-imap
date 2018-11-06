@@ -4,7 +4,7 @@
 <form col="6">
     <label name="name"/>
     <field name="name"/>
-    <separator id="server_info" string="Server Information" colspan="6"/>
+    <separator id="imap_server_info" string="Server Information" colspan="6"/>
     <label name="host"/>
     <field name="host"/>
     <label name="ssl"/>
@@ -15,6 +15,12 @@
     <field name="folder"/>
     <label name="timeout"/>
     <field name="timeout"/>
+    <label name="search_mode"/>
+    <field name="search_mode"/>
+    <label name="last_retrieve_date"/>
+    <field name="last_retrieve_date"/>
+    <label name="offset"/>
+    <field name="offset"/>
     <label name="criterion"/>
     <field name="criterion"/>
     <newline/>
@@ -29,8 +35,8 @@
     <label name="state"/>
     <field name="state"/>
     <group colspan="4" col="3" id="buttons">
-        <button name="draft" string="Draft" icon="tryton-clear"/>
-        <button name="done" string="Confirm" icon="tryton-go-next"/>
-        <button name="test" string="Test Connection" icon="tryton-ok"/>
+        <button name="draft" icon="tryton-clear"/>
+        <button name="done" icon="tryton-go-next"/>
+        <button name="test" icon="tryton-ok"/>
     </group>
 </form>
