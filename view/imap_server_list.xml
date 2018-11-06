@@ -9,5 +9,6 @@
     <field name="email"/>
     <field name="folder"/>
     <field name="user"/>
+    <field name="search_mode"/>
     <field name="state"/>
 </tree>

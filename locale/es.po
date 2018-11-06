@@ -1,0 +1,256 @@
+#
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "error:imap.server:"
+msgid ""
+"Error IMAP Server:\n"
+"%s"
+msgstr ""
+"Error Servidor IMAP:\n"
+"%s"
+
+msgctxt "error:imap.server:"
+msgid ""
+"Error IMAP Server:\n"
+"Could not get id \"%s\" messages.\n"
+"\n"
+"%s"
+msgstr ""
+"Error Servidor IMAP:\n"
+"No se pudieron obtener los mensajes con ID \"%s\". \n"
+"\n"
+"%s"
+
+msgctxt "error:imap.server:"
+msgid ""
+"Error IMAP Server:\n"
+"Could not search \"%s\" messages.\n"
+"\n"
+"%s"
+msgstr ""
+"Error Server IMAP:\n"
+"No se pudieron buscar los mensajes \"%s\".\n"
+"\n"
+"%s"
+
+msgctxt "error:imap.server:"
+msgid ""
+"Error IMAP Server:\n"
+"Could not select \"%s\" mailbox.\n"
+"\n"
+"%s"
+msgstr ""
+"Error Servidor IMAP:\n"
+"No se puede seleccionar el buzón \"%s\".\n"
+"\n"
+"%s"
+
+msgctxt "error:imap.server:"
+msgid ""
+"Error IMAP Server:\n"
+"Login with user \"%s\" could not be possible.\n"
+"\n"
+"%s"
+msgstr ""
+"Error Servidor IMAP:\n"
+"El inicio de sesión con el usuario \"%s\" no pudo ser posible.\n"
+"\n"
+"%s"
+
+msgctxt "error:imap.server:"
+msgid "IMAP connection test failed."
+msgstr "Falló la prueba de conexión IMAP."
+
+msgctxt "error:imap.server:"
+msgid ""
+"IMAP test connection Details:\n"
+"%s"
+msgstr ""
+"Detalles de la conexión de pruebas IMAP:\n"
+"%s"
+
+msgctxt "error:imap.server:"
+msgid "Successful IMAP test connection using account \"%s\"."
+msgstr "Conexión de prueba IMAP exitosa usando la cuenta \"%s\"."
+
+msgctxt "error:imap.server:"
+msgid "The email account must be unique!"
+msgstr "¡La cuenta de email debe ser única!"
+
+msgctxt "field:imap.server,create_date:"
+msgid "Create Date"
+msgstr "Fecha de creación"
+
+msgctxt "field:imap.server,create_uid:"
+msgid "Create User"
+msgstr "Usuario de creación"
+
+msgctxt "field:imap.server,criterion:"
+msgid "Criterion"
+msgstr "Criterio"
+
+msgctxt "field:imap.server,email:"
+msgid "Email"
+msgstr "Email"
+
+msgctxt "field:imap.server,folder:"
+msgid "Folder"
+msgstr "Carpeta"
+
+msgctxt "field:imap.server,host:"
+msgid "Server"
+msgstr "Servidor"
+
+msgctxt "field:imap.server,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:imap.server,last_retrieve_date:"
+msgid "Last Retrieve Date"
+msgstr "Última fecha de recepción"
+
+msgctxt "field:imap.server,name:"
+msgid "Name"
+msgstr "Nombre"
+
+msgctxt "field:imap.server,offset:"
+msgid "Days Offset"
+msgstr "Días de Offset"
+
+msgctxt "field:imap.server,password:"
+msgid "Password"
+msgstr "Contraseña"
+
+msgctxt "field:imap.server,port:"
+msgid "Port"
+msgstr "Puerto"
+
+msgctxt "field:imap.server,readonly:"
+msgid "Read Only"
+msgstr "Solo lectura"
+
+msgctxt "field:imap.server,rec_name:"
+msgid "Record Name"
+msgstr "Nombre del registro"
+
+msgctxt "field:imap.server,search_mode:"
+msgid "Search Mode"
+msgstr "Modo de búsqueda"
+
+msgctxt "field:imap.server,ssl:"
+msgid "SSL"
+msgstr "SSL"
+
+msgctxt "field:imap.server,state:"
+msgid "State"
+msgstr "Estado"
+
+msgctxt "field:imap.server,timeout:"
+msgid "Time Out"
+msgstr "Tiempo de expiración"
+
+msgctxt "field:imap.server,user:"
+msgid "Username"
+msgstr "Nombre de usuario"
+
+msgctxt "field:imap.server,write_date:"
+msgid "Write Date"
+msgstr "Fecha modificación"
+
+msgctxt "field:imap.server,write_uid:"
+msgid "Write User"
+msgstr "Usuario modificación"
+
+msgctxt "help:imap.server,email:"
+msgid "Default From (if active this option) and Reply Email"
+msgstr ""
+"Origen predeterminado (si está activa esta opción) y correoelectrónico de "
+"respuesta"
+
+msgctxt "help:imap.server,folder:"
+msgid "The folder name where to read from on the server."
+msgstr "El nombre de la carpeta desde donde leer en el servidor."
+
+msgctxt "help:imap.server,search_mode:"
+msgid ""
+"The criteria to filter when download messages. By default is only take the "
+"unread mesages, but it is possible to take a time interval or a custom "
+"selection"
+msgstr ""
+"Los criterios para filtrar cuando se descargan mensajes. Por defecto, solo "
+"descarga mensajes no leídos, pero es posible descargar por un intervalo de "
+"tiempo o una selección personalizada"
+
+msgctxt "help:imap.server,timeout:"
+msgid "Time to wait until connection is established. In seconds."
+msgstr "Tiempo a esperar mientras una conexión es establecida. En segundos"
+
+msgctxt "model:imap.server,name:"
+msgid "IMAP Server"
+msgstr "Servidor IMAP"
+
+msgctxt "model:ir.action,name:act_imap_server"
+msgid "IMAP Server"
+msgstr "Servidor IMAP"
+
+msgctxt "model:ir.model.button,string:imap_done_button"
+msgid "Done"
+msgstr "Finalizar"
+
+msgctxt "model:ir.model.button,string:imap_draft_button"
+msgid "Draft"
+msgstr "Borrador"
+
+msgctxt "model:ir.model.button,string:imap_get_mails_button"
+msgid "Get Mails"
+msgstr "Obtener Emails"
+
+msgctxt "model:ir.model.button,string:imap_test_button"
+msgid "Test"
+msgstr "Prueba"
+
+msgctxt "model:ir.ui.menu,name:menu_imap"
+msgid "IMAP"
+msgstr "IMAP"
+
+msgctxt "model:ir.ui.menu,name:menu_imap_server"
+msgid "IMAP Server"
+msgstr "Servidor IMAP"
+
+msgctxt "model:res.group,name:group_imap"
+msgid "IMAP"
+msgstr "IMAP"
+
+msgctxt "model:res.group,name:group_imap_admin"
+msgid "IMAP Administration"
+msgstr "Administración IMAP"
+
+msgctxt "selection:imap.server,search_mode:"
+msgid "Custom"
+msgstr "Personalizado"
+
+msgctxt "selection:imap.server,search_mode:"
+msgid "Time Interval"
+msgstr "Intervalo de tiempo"
+
+msgctxt "selection:imap.server,search_mode:"
+msgid "Unseen"
+msgstr "No leidos"
+
+msgctxt "selection:imap.server,state:"
+msgid "Done"
+msgstr "Finalizar"
+
+msgctxt "selection:imap.server,state:"
+msgid "Draft"
+msgstr "Borrador"
+
+msgctxt "view:imap.server:"
+msgid "Server Information"
+msgstr "Información del Servidor"
+
+msgctxt "view:imap.server:"
+msgid "Login Information"
+msgstr "Información de usuario"
+
