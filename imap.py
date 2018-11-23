@@ -48,6 +48,8 @@ class IMAPServer(ModelSQL, ModelView):
             'readonly': (Eval('state') != 'draft'),
             'invisible': Bool(Eval('search_mode') != 'custom'),
             }, depends=['state', 'search_mode'])
+    criterion_used = fields.Function(fields.Char('Criterion used'),
+        'get_criterion_used')
     email = fields.Char('Email', required=True,
         states={
             'readonly': (Eval('state') != 'draft'),
@@ -83,11 +85,11 @@ class IMAPServer(ModelSQL, ModelView):
                 'invisible': Bool(Eval('search_mode') != 'interval'),
                 'readonly': (Eval('state') != 'draft'),
                 }, depends=['state', 'search_mode'])
-    offset = fields.Integer('Days Offset',
+    offset = fields.Integer('Days Offset', domain=[('offset', '>=', 1)],
         states={
                 'invisible': Bool(Eval('search_mode') != 'interval'),
                 'readonly': (Eval('state') != 'draft'),
-                }, depends=['state', 'search_mode'])
+                }, depends=['state', 'search_mode'], required=True)
     readonly = fields.Function(fields.Boolean('Read Only'), 'get_readonly')
 
     @classmethod
@@ -163,17 +165,17 @@ class IMAPServer(ModelSQL, ModelView):
     def on_change_with_user(self):
         return self.email or ""
 
-    @fields.depends('search_mode', 'last_retrieve_date', 'offset')
-    def on_change_with_criterion(self, name=None):
-        if self.search_mode == 'unseen':
-            return 'UNSEEN'
+    def get_criterion_used(self, name=None):
         if self.search_mode == 'interval':
             if not self.last_retrieve_date:
                 return 'ALL'
-            offset = datetime.timedelta(days=self.offset or 0)
+            offset = datetime.timedelta(days=self.offset)
             date_with_offset = self.last_retrieve_date - offset
             return '(SINCE "%s")' % date_with_offset.strftime(
                 _IMAP_DATE_FORMAT)
+        elif self.search_mode == 'unseen':
+            return 'UNSEEN'
+        return self.criterion
 
     def get_readonly(self, name):
         return True if self.search_mode == 'interval' else None
@@ -266,9 +268,8 @@ class IMAPServer(ModelSQL, ModelView):
             self.raise_user_error('select_error', (self.folder, data))
 
         try:
-            status, data = imapper.search(None, self.criterion)
-            self.last_retrieve_date = (
-                datetime.date.today() - datetime.timedelta(1))
+            status, data = imapper.search(None, self.criterion_used)
+            self.last_retrieve_date = datetime.date.today()
             self.save()
         except (imaplib2.IMAP4.error, imaplib2.IMAP4.abort,
                 imaplib2.IMAP4.readonly, socket.error) as e:
@@ -276,7 +277,7 @@ class IMAPServer(ModelSQL, ModelView):
             data = e
         if status != 'OK':
             imapper.logout()
-            self.raise_user_error('search_error', (self.criterion, data))
+            self.raise_user_error('search_error', (self.criterion_used, data))
         return data[0].split()
 
     def fetch_one(self, imapper, emailid, parts='(UID RFC822)'):
