@@ -8,7 +8,7 @@ import logging
 
 # Use impalib instead imaplib2 beacuse imaplib2 doesn't support to set the
 # connection timeout
-import imaplib2
+import imaplib2.imaplib2 as imaplib2
 
 __all__ = ['IMAPServer']
 

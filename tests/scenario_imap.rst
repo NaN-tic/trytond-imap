@@ -26,20 +26,26 @@ Create IMAP server::
     >>> server.save()
     >>> server.search_mode == u'unseen'
     True
-    >>> server.criterion == 'UNSEEN'
+    >>> server.criterion_used == 'UNSEEN'
     True
     >>> server.search_mode = u'interval'
+    >>> server.save()
     >>> server.last_retrieve_date == None
     True
-    >>> server.criterion == u'ALL'
+    >>> server.criterion_used == u'ALL'
     True
     >>> server.last_retrieve_date = today
-    >>> server.offset = 0
-    >>> server.criterion == '(SINCE "%s")' % today.strftime('%d-%b-%Y')
-    True
     >>> server.offset = 1
-    >>> server.criterion == '(SINCE "%s")' % yesterday.strftime('%d-%b-%Y')
+    >>> server.save()
+    >>> server.criterion_used == '(SINCE "%s")' % yesterday.strftime('%d-%b-%Y')
     True
     >>> server.offset = None
-    >>> server.criterion == '(SINCE "%s")' % today.strftime('%d-%b-%Y')
-    True
+    >>> server.save() # doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    UserError: ...
+    >>> server.offset = 0
+    >>> server.save() # doctest: +IGNORE_EXCEPTION_DETAIL
+    Traceback (most recent call last):
+        ...
+    UserError: ...

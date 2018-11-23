@@ -14,7 +14,7 @@ from trytond.tests.test_tryton import ModuleTestCase, with_transaction
 from trytond.tests.test_tryton import doctest_teardown, doctest_checker
 
 from trytond.pool import Pool
-import imaplib2
+import imaplib2.imaplib2 as imaplib2
 
 __all__ = ['create_imap_server', 'create_mock_imap_conn', 'create_mock_mails']
 
@@ -62,7 +62,6 @@ def create_mock_imap_conn(ssl, mails):
     Create a mocked imap connection
     '''
     mail_list = ("OK", (" ".join(list(mails.keys())),))
-
     if ssl:
         mock_conn = MagicMock(spec=imaplib2.IMAP4_SSL)
     else:
