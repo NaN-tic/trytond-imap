@@ -43,10 +43,11 @@ class IMAPServer(ModelSQL, ModelView):
             'readonly': (Eval('state') != 'draft'),
             }, help=('Time to wait until connection is established. '
                 'In seconds.'))
-    criterion = fields.Char('Criterion', required=True,
+    criterion = fields.Char('Criterion', required=False,
         states={
             'readonly': (Eval('state') != 'draft'),
             'invisible': Bool(Eval('search_mode') != 'custom'),
+            'required': Bool(Eval('search_mode') == 'custom')
             }, depends=['state', 'search_mode'])
     criterion_used = fields.Function(fields.Char('Criterion used'),
         'get_criterion_used')
