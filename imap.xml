@@ -10,19 +10,11 @@
             <field name="user" ref="res.user_admin"/>
             <field name="group" ref="group_imap_admin"/>
         </record>
-        <record model="res.user-res.group" id="user_trigger_group_imap_admin">
-            <field name="user" ref="res.user_trigger"/>
-            <field name="group" ref="group_imap_admin"/>
-        </record>
         <record model="res.group" id="group_imap">
             <field name="name">IMAP</field>
         </record>
         <record model="res.user-res.group" id="user_admin_group_imap">
             <field name="user" ref="res.user_admin"/>
-            <field name="group" ref="group_imap"/>
-        </record>
-        <record model="res.user-res.group" id="user_trigger_group_imap">
-            <field name="user" ref="res.user_trigger"/>
             <field name="group" ref="group_imap"/>
         </record>
         <record model="ir.ui.view" id="imap_server_view_form">
