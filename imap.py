@@ -5,6 +5,8 @@ from trytond.pyson import Eval, Bool
 import socket
 import datetime
 import logging
+from trytond.i18n import gettext
+from trytond.exceptions import UserError
 
 # Use impalib instead imaplib2 beacuse imaplib2 doesn't support to set the
 # connection timeout
@@ -101,21 +103,6 @@ class IMAPServer(ModelSQL, ModelView):
             ('account_uniq', Unique(t, t.user),
                 'The email account must be unique!'),
             ]
-        cls._error_messages.update({
-                'connection_successful': ('Successful IMAP test connection '
-                    'using account "%s".'),
-                'test_details': 'IMAP test connection Details:\n%s',
-                'connection_error': 'IMAP connection test failed.',
-                'general_error': 'Error IMAP Server:\n%s',
-                'login_error': ('Error IMAP Server:\nLogin with user "%s" '
-                    'could not be possible.\n\n%s'),
-                'select_error': ('Error IMAP Server:\nCould not select "%s" '
-                    'mailbox.\n\n%s'),
-                'search_error': ('Error IMAP Server:\nCould not search "%s" '
-                    'messages.\n\n%s'),
-                'fetch_error': ('Error IMAP Server:\nCould not get id "%s" '
-                    'messages.\n\n%s'),
-                })
         cls._buttons.update({
             'test': {},
             'draft': {
@@ -208,7 +195,8 @@ class IMAPServer(ModelSQL, ModelView):
         for server in servers:
             imapper = cls.connect(server)
             imapper.logout()
-            cls.raise_user_error('connection_successful', server.rec_name)
+            raise UserError(gettext('imap.connection_successful',
+                account=server.rec_name))
 
     @classmethod
     def connect(cls, server, keyfile=None, certfile=None,
@@ -233,7 +221,7 @@ class IMAPServer(ModelSQL, ModelView):
                     timeout=timeout)
         except (imaplib2.IMAP4.error, imaplib2.IMAP4.abort,
                 imaplib2.IMAP4.readonly, socket.error) as e:
-            cls.raise_user_error('general_error', e)
+            raise UserError(gettext('imap.general_error', msg=e))
 
     @classmethod
     def login(cls, imapper, user, password):
@@ -249,7 +237,8 @@ class IMAPServer(ModelSQL, ModelView):
         if status != 'OK':
             imapper.logout()
             data = e
-            cls.raise_user_error('login_error', (user, data))
+            raise UserError(gettext('imap.login_error',
+                user=user, msg=data))
         return imapper
 
     def fetch_ids(self, imapper):
@@ -266,7 +255,8 @@ class IMAPServer(ModelSQL, ModelView):
             data = e
         if status != 'OK':
             imapper.logout()
-            self.raise_user_error('select_error', (self.folder, data))
+            raise UserError(gettext('imap.select_error',
+                folder=self.folder, msg=data))
 
         try:
             status, data = imapper.search(None, self.criterion_used)
@@ -278,7 +268,8 @@ class IMAPServer(ModelSQL, ModelView):
             data = e
         if status != 'OK':
             imapper.logout()
-            self.raise_user_error('search_error', (self.criterion_used, data))
+            raise UserError(gettext('imap.search_error',
+                criteria=self.criterion_used, msg=data))
         return data[0].split()
 
     def fetch_one(self, imapper, emailid, parts='(UID RFC822)'):
@@ -294,7 +285,8 @@ class IMAPServer(ModelSQL, ModelView):
             data = e
         if status != 'OK':
             imapper.logout()
-            self.raise_user_error('fetch_error', (emailid, data))
+            raise UserError(gettext('imap.fetch_error',
+                email=emailid, msg=data))
         result[emailid] = data
         return result
 

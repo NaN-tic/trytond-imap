@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!-- This file is part of Tryton.  The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<tryton>
+    <data group="1">
+    <record model="ir.message" id="connection_successful">
+        <field name="text">Successful IMAP test connection using account "%(account)s".</field>
+    </record>
+    <record model="ir.message" id="test_details">
+        <field name="text">IMAP test connection Details:\n%(msg)s</field>
+    </record>
+    <record model="ir.message" id="connection_error">
+        <field name="text">IMAP connection test failed.</field>
+    </record>
+    <record model="ir.message" id="general_error">
+        <field name="text">Error IMAP Server:\n%(msg)s</field>
+    </record>
+    <record model="ir.message" id="login_error">
+        <field name="text">Error IMAP Server:\nLogin with user "%(login)s" '
+                    'could not be possible.\n\n%(msg)s</field>
+    </record>
+    <record model="ir.message" id="select_error">
+        <field name="text">Error IMAP Server:\nCould not select "%(folder)s" '
+                    'mailbox.\n\n%(msg)s</field>
+    </record>
+    <record model="ir.message" id="search_error">
+        <field name="text">Error IMAP Server:\nCould not search "%(criteria)s" '
+                    'messages.\n\n%(msg)s</field>
+    </record>
+    <record model="ir.message" id="fetch_error">
+        <field name="text">Error IMAP Server:\nCould not get id "%(email)s"
+                    'messages.\n\n%(msg)s</field>
+    </record>
+    </data>
+</tryton>
