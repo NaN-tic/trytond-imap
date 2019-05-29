@@ -203,8 +203,8 @@ class IMAPServer(ModelSQL, ModelView):
             debug=0, identifier=None):
         imapper = cls.get_server(server.host, server.port, server.ssl,
             keyfile, certfile, debug, identifier, server.timeout)
-        return cls.login(imapper, server.user.encode('UTF-8'),
-            server.password.encode('UTF-8'))
+        return cls.login(imapper, server.user,
+            server.password)
 
     @classmethod
     def get_server(cls, host, port, ssl=False, keyfile=None,
