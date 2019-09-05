@@ -36,7 +36,7 @@
     <field name="state"/>
     <group colspan="4" col="3" id="buttons">
         <button name="draft" icon="tryton-clear"/>
-        <button name="done" icon="tryton-go-next"/>
+        <button name="done" icon="tryton-forward"/>
         <button name="test" icon="tryton-ok"/>
     </group>
 </form>
