@@ -236,7 +236,6 @@ class IMAPServer(ModelSQL, ModelView):
             data = e
         if status != 'OK':
             imapper.logout()
-            data = e
             raise UserError(gettext('imap.login_error',
                 user=user, msg=data))
         return imapper
