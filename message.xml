@@ -16,20 +16,16 @@ this repository contains the full copyright notices and license terms. -->
         <field name="text">Error IMAP Server:\n%(msg)s</field>
     </record>
     <record model="ir.message" id="login_error">
-        <field name="text">Error IMAP Server:\nLogin with user "%(login)s" '
-                    'could not be possible.\n\n%(msg)s</field>
+        <field name="text">Error IMAP Server:\nLogin with user "%(user)s" failed.\n\n%(msg)s</field>
     </record>
     <record model="ir.message" id="select_error">
-        <field name="text">Error IMAP Server:\nCould not select "%(folder)s" '
-                    'mailbox.\n\n%(msg)s</field>
+        <field name="text">Error IMAP Server:\nCould not select "%(folder)s" mailbox.\n\n%(msg)s</field>
     </record>
     <record model="ir.message" id="search_error">
-        <field name="text">Error IMAP Server:\nCould not search "%(criteria)s" '
-                    'messages.\n\n%(msg)s</field>
+        <field name="text">Error IMAP Server:\nCould not search "%(criteria)s" messages.\n\n%(msg)s</field>
     </record>
     <record model="ir.message" id="fetch_error">
-        <field name="text">Error IMAP Server:\nCould not get id "%(email)s"
-                    'messages.\n\n%(msg)s</field>
+        <field name="text">Error IMAP Server:\nCould not get id "%(email)s" messages.\n\n%(msg)s</field>
     </record>
     </data>
 </tryton>
