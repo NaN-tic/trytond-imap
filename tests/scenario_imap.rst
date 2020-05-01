@@ -13,8 +13,7 @@ Imports::
     ...     get_company
     >>> from trytond.modules.imap.tests.test_imap import create_imap_server
     >>> today = datetime.date.today()
-    >>> yesterday = today.replace(day=today.day - 1)
-
+    >>> yesterday = today - relativedelta(days=1)
 
 Install imap::
 
