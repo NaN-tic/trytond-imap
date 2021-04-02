@@ -8,9 +8,7 @@ import logging
 from trytond.i18n import gettext
 from trytond.exceptions import UserError
 
-# Use impalib instead imaplib2 beacuse imaplib2 doesn't support to set the
-# connection timeout
-import imaplib2.imaplib2 as imaplib2
+from imaplib import IMAP4, IMAP4_SSL
 
 __all__ = ['IMAPServer']
 
@@ -198,6 +196,9 @@ class IMAPServer(ModelSQL, ModelView):
             debug=0, identifier=None):
         imapper = cls.get_server(server.host, server.port, server.ssl,
             keyfile, certfile, debug, identifier, server.timeout)
+        # TODO: remove this 'sock' use, when use python >= 3.9.2
+        sock = imapper.socket()
+        sock.settimeout(server.timeout)
         return cls.login(imapper, server.user,
             server.password)
 
@@ -208,14 +209,20 @@ class IMAPServer(ModelSQL, ModelView):
         Obtain an IMAP opened connection
         '''
         try:
+            # TODO: uncomment when use python >= 3.9.2 and remove the bottom
+            #       conditional code that not use timeout.
+            #if ssl:
+            #    return IMAP4_SSL(host=str(host), port=int(port),
+            #        keyfile=keyfile, certfile=certfile, timeout=timeout)
+            #else:
+            #    return IMAP4(host=str(host), port=int(port),
+            #        timeout=timeout)
             if ssl:
-                return imaplib2.IMAP4_SSL(host=str(host), port=int(port),
-                    keyfile=keyfile, certfile=certfile, timeout=timeout)
+                return IMAP4_SSL(host=str(host), port=int(port),
+                    keyfile=keyfile, certfile=certfile)
             else:
-                return imaplib2.IMAP4(host=str(host), port=int(port),
-                    timeout=timeout)
-        except (imaplib2.IMAP4.error, imaplib2.IMAP4.abort,
-                imaplib2.IMAP4.readonly, socket.error) as e:
+                return IMAP4(host=str(host), port=int(port))
+        except (IMAP4.error, IMAP4.abort, IMAP4.readonly, socket.error) as e:
             raise UserError(gettext('imap.general_error', msg=e))
 
     @classmethod
@@ -225,8 +232,7 @@ class IMAPServer(ModelSQL, ModelView):
         '''
         try:
             status, data = imapper.login(user, password)
-        except (imaplib2.IMAP4.error, imaplib2.IMAP4.abort,
-                imaplib2.IMAP4.readonly, socket.error) as e:
+        except (IMAP4.error, IMAP4.abort, IMAP4.readonly, socket.error) as e:
             status = 'NO'
             data = e
         if status != 'OK':
@@ -243,8 +249,7 @@ class IMAPServer(ModelSQL, ModelView):
         status = None
         try:
             status, data = imapper.select(self.folder, self.readonly)
-        except (imaplib2.IMAP4.error, imaplib2.IMAP4.abort,
-                imaplib2.IMAP4.readonly, socket.error) as e:
+        except (IMAP4.error, IMAP4.abort, IMAP4.readonly, socket.error) as e:
             status = 'NO'
             data = e
         if status != 'OK':
@@ -256,8 +261,7 @@ class IMAPServer(ModelSQL, ModelView):
             status, data = imapper.search(None, self.criterion_used)
             self.last_retrieve_date = datetime.date.today()
             self.save()
-        except (imaplib2.IMAP4.error, imaplib2.IMAP4.abort,
-                imaplib2.IMAP4.readonly, socket.error) as e:
+        except (IMAP4.error, IMAP4.abort, IMAP4.readonly, socket.error) as e:
             status = 'NO'
             data = e
         if status != 'OK':
@@ -273,8 +277,7 @@ class IMAPServer(ModelSQL, ModelView):
         result = {}
         try:
             status, data = imapper.fetch(emailid, parts)
-        except (imaplib2.IMAP4.error, imaplib2.IMAP4.abort,
-                imaplib2.IMAP4.readonly, socket.error) as e:
+        except (IMAP4.error, IMAP4.abort, IMAP4.readonly, socket.error) as e:
             status = 'KO'
             data = e
         if status != 'OK':
