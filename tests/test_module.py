@@ -1,7 +1,7 @@
-# The COPYRIGHT file at the top level of this repository contains the full
-# copyright notices and license terms.
-import unittest
-import doctest
+
+# This file is part of Tryton.  The COPYRIGHT file at the top level of
+# this repository contains the full copyright notices and license terms.
+
 try:
     # Python >= 3.3
     from unittest.mock import MagicMock
@@ -9,14 +9,10 @@ except ImportError:
     # Python < 3.3
     from mock import MagicMock
 
-import trytond.tests.test_tryton
 from trytond.tests.test_tryton import ModuleTestCase, with_transaction
-from trytond.tests.test_tryton import doctest_teardown, doctest_checker
 
 from trytond.pool import Pool
 import imaplib2.imaplib2 as imaplib2
-
-__all__ = ['create_imap_server', 'create_mock_imap_conn', 'create_mock_mails']
 
 
 def create_imap_server(provider):
@@ -80,7 +76,7 @@ def create_mock_imap_conn(ssl, mails):
 
 
 class ImapTestCase(ModuleTestCase):
-    'Imap Test module'
+    'Test Imap module'
     module = 'imap'
 
     @with_transaction()
@@ -138,11 +134,4 @@ class ImapTestCase(ModuleTestCase):
         self.assertEqual(result, expected)
 
 
-def suite():
-    suite = trytond.tests.test_tryton.suite()
-    suite.addTests(unittest.TestLoader().loadTestsFromTestCase(ImapTestCase))
-    suite.addTests(doctest.DocFileSuite('scenario_imap.rst',
-            tearDown=doctest_teardown, encoding='utf-8',
-            optionflags=doctest.REPORT_ONLY_FIRST_FAILURE,
-            checker=doctest_checker))
-    return suite
+del ModuleTestCase

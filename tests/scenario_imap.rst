@@ -11,7 +11,7 @@ Imports::
     >>> from trytond.tests.tools import activate_modules, set_user
     >>> from trytond.modules.company.tests.tools import create_company, \
     ...     get_company
-    >>> from trytond.modules.imap.tests.test_imap import create_imap_server
+    >>> from trytond.modules.imap.tests.test_module import create_imap_server
     >>> today = datetime.date.today()
     >>> yesterday = today - relativedelta(days=1)
 
