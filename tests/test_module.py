@@ -12,7 +12,7 @@ except ImportError:
 from trytond.tests.test_tryton import ModuleTestCase, with_transaction
 
 from trytond.pool import Pool
-import imaplib2.imaplib2 as imaplib2
+from imaplib import IMAP4, IMAP4_SSL
 
 
 def create_imap_server(provider):
@@ -59,9 +59,9 @@ def create_mock_imap_conn(ssl, mails):
     '''
     mail_list = ("OK", (" ".join(list(mails.keys())),))
     if ssl:
-        mock_conn = MagicMock(spec=imaplib2.IMAP4_SSL)
+        mock_conn = MagicMock(spec=IMAP4_SSL)
     else:
-        mock_conn = MagicMock(spec=imaplib2.IMAP4)
+        mock_conn = MagicMock(spec=IMAP4)
 
     mock_conn.login.return_value = ('OK', [])
     mock_conn.capability.return_value = ('OK', ["A B C"])
@@ -90,7 +90,7 @@ class ImapTestCase(ModuleTestCase):
         mock_conn = create_mock_imap_conn(ssl=server.ssl, mails=mails)
         IMAPServer.get_server = MagicMock(return_value=mock_conn)
         imapper = IMAPServer.connect(server)
-        self.assertNotIsInstance(imapper, imaplib2.IMAP4_SSL)
+        self.assertNotIsInstance(imapper, IMAP4_SSL)
 
     @with_transaction()
     def test_connect_with_ssl(self):
@@ -102,7 +102,7 @@ class ImapTestCase(ModuleTestCase):
         mock_conn = create_mock_imap_conn(ssl=server.ssl, mails=mails)
         IMAPServer.get_server = MagicMock(return_value=mock_conn)
         imapper = IMAPServer.connect(server)
-        self.assertIsInstance(imapper, imaplib2.IMAP4_SSL)
+        self.assertIsInstance(imapper, IMAP4_SSL)
 
     @with_transaction()
     def test_fetch_ids(self):
