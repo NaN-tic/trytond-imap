@@ -7,25 +7,41 @@ this repository contains the full copyright notices and license terms. -->
         <field name="text">Successful IMAP test connection using account "%(account)s".</field>
     </record>
     <record model="ir.message" id="test_details">
-        <field name="text">IMAP test connection Details:\n%(msg)s</field>
+        <field name="text">IMAP test connection Details:
+
+%(msg)s</field>
     </record>
     <record model="ir.message" id="connection_error">
         <field name="text">IMAP connection test failed.</field>
     </record>
     <record model="ir.message" id="general_error">
-        <field name="text">Error IMAP Server:\n%(msg)s</field>
+        <field name="text">Error IMAP Server:
+
+%(msg)s</field>
     </record>
     <record model="ir.message" id="login_error">
-        <field name="text">Error IMAP Server:\nLogin with user "%(user)s" failed.\n\n%(msg)s</field>
+        <field name="text">Error IMAP Server:
+Login with user "%(user)s" failed.
+
+%(msg)s</field>
     </record>
     <record model="ir.message" id="select_error">
-        <field name="text">Error IMAP Server:\nCould not select "%(folder)s" mailbox.\n\n%(msg)s</field>
+        <field name="text">Error IMAP Server:
+Could not select "%(folder)s" mailbox.
+
+%(msg)s</field>
     </record>
     <record model="ir.message" id="search_error">
-        <field name="text">Error IMAP Server:\nCould not search "%(criteria)s" messages.\n\n%(msg)s</field>
+        <field name="text">Error IMAP Server:
+Could not search "%(criteria)s" messages.
+
+%(msg)s</field>
     </record>
     <record model="ir.message" id="fetch_error">
-        <field name="text">Error IMAP Server:\nCould not get id "%(email)s" messages.\n\n%(msg)s</field>
+        <field name="text">Error IMAP Server:
+Could not get id "%(email)s" messages.
+
+%(msg)s</field>
     </record>
     </data>
 </tryton>
