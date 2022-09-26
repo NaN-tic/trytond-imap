@@ -60,7 +60,7 @@ class IMAPServer(ModelSQL, ModelView):
         states={
             'readonly': (Eval('state') != 'draft'),
         }, depends=['state'])
-    password = fields.Char('Password', required=True,
+    password = fields.Char('Password', required=True, strip=False,
         states={
             'readonly': (Eval('state') != 'draft'),
         }, depends=['state'])
