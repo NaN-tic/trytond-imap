@@ -73,7 +73,7 @@ class IMAPServer(ModelSQL, ModelView):
             ('unseen', 'Unseen'),
             ('interval', 'Time Interval'),
             ('custom', 'Custom')
-            ], 'Search Mode', select=True,
+            ], 'Search Mode',
         states={
             'readonly': (Eval('state') != 'draft'),
             }, depends=['state', 'search_mode'],
