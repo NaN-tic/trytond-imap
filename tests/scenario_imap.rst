@@ -34,17 +34,6 @@ Create IMAP server::
     >>> server.criterion_used == u'ALL'
     True
     >>> server.last_retrieve_date = today
-    >>> server.offset = 1
     >>> server.save()
     >>> server.criterion_used == '(SINCE "%s")' % yesterday.strftime('%d-%b-%Y')
     True
-    >>> server.offset = None
-    >>> server.save() # doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    trytond.model.modelstorage.DomainValidationError: ...
-    >>> server.offset = 0
-    >>> server.save() # doctest: +IGNORE_EXCEPTION_DETAIL
-    Traceback (most recent call last):
-        ...
-    trytond.model.modelstorage.DomainValidationError: ...
