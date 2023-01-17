@@ -30,7 +30,8 @@ def create_imap_server(provider):
         port=8888,
         email='test@example.com',
         user='test@example.com',
-        password='testpw'
+        password='testpw',
+        offset=1,
         )
     return imap_server
 
