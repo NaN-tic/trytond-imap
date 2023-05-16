@@ -162,6 +162,18 @@ msgctxt "field:imap.server,write_uid:"
 msgid "Write User"
 msgstr "Usuari modificació"
 
+msgctxt "field:imap.server,mark_seen:"
+msgid "Mark as seen"
+msgstr "Marcar com a llegit"
+
+msgctxt "field:imap.server,action_after_read:"
+msgid "Action after read"
+msgstr "Acció després de llegir"
+
+msgctxt "field:imap.server,destination_folder:"
+msgid "Destination folder"
+msgstr "Carpeta destí"
+
 msgctxt "help:imap.server,email:"
 msgid "Default From (if active this option) and Reply Email"
 msgstr ""
@@ -185,6 +197,18 @@ msgstr ""
 msgctxt "help:imap.server,timeout:"
 msgid "Time to wait until connection is established. In seconds."
 msgstr "Temps a esperar mentrés una connexió és establida. En segons."
+
+msgctxt "help:imap.server,mark_seen:"
+msgid "Mark emails as seen on fetch."
+msgstr "Marcar el correu com a llegit després de descarregar"
+
+msgctxt "help:imap.server,action_after_read:"
+msgid "The action to do after each email is readed."
+msgstr "L'acció a fer després de llegir cada correu."
+
+msgctxt "help:imap.server,destination_folder:"
+msgid "The folder name where to move to on the server. Absolut path."
+msgstr "El nom de la carpeta on moure del servidor. Camí absolut."
 
 msgctxt "model:imap.server,name:"
 msgid "IMAP Server"
@@ -245,6 +269,14 @@ msgstr "Finalitzat"
 msgctxt "selection:imap.server,state:"
 msgid "Draft"
 msgstr "Esborrany"
+
+msgctxt "selection:imap.server,action_after_read:"
+msgid "Nothing"
+msgstr "Res"
+
+msgctxt "selection:imap.server,action_after_read:"
+msgid "Move to a folder"
+msgstr "Moure a una carpeta"
 
 msgctxt "view:imap.server:"
 msgid "Server Information"

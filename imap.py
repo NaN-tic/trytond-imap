@@ -68,7 +68,6 @@ class IMAPServer(ModelSQL, ModelView):
             ('draft', 'Draft'),
             ('done', 'Done'),
             ], 'State', readonly=True, required=True)
-
     search_mode = fields.Selection([
             ('unseen', 'Unseen'),
             ('interval', 'Time Interval'),
@@ -80,7 +79,6 @@ class IMAPServer(ModelSQL, ModelView):
         help='The criteria to filter when download messages. By '
             'default is only take the unread mesages, but it is possible '
             'to take a time interval or a custom selection')
-
     last_retrieve_date = fields.Date('Last Retrieve Date',
         states={
                 'invisible': Bool(Eval('search_mode') != 'interval'),
@@ -91,7 +89,24 @@ class IMAPServer(ModelSQL, ModelView):
                 'invisible': Bool(Eval('search_mode') != 'interval'),
                 'readonly': (Eval('state') != 'draft'),
                 }, depends=['state', 'search_mode'], required=True)
-    readonly = fields.Function(fields.Boolean('Read Only'), 'get_readonly')
+    mark_seen = fields.Boolean('Mark as seen',
+        help='Mark emails as seen on fetch.')
+    action_after_read = fields.Selection([
+            ('nothing', 'Nothing'),
+            ('move', 'Move to a folder')
+            ], 'Action after read', select=True,
+        states={
+            'readonly': (Eval('state') != 'draft'),
+            }, depends=['state'],
+        help='The action to do after each email is readed.')
+    destination_folder = fields.Char('Move Folder',
+        states={
+            'invisible': Bool(Eval('action_after_read') != 'move'),
+            'required': Bool(Eval('action_after_read') == 'move'),
+            'readonly': (Eval('state') != 'draft'),
+            }, depends=['state', 'action_after_read'],
+            help='The folder name where to move to on the server.'
+            ' Absolut path')
 
     @classmethod
     def __setup__(cls):
@@ -138,6 +153,14 @@ class IMAPServer(ModelSQL, ModelView):
     def default_state():
         return 'draft'
 
+    @staticmethod
+    def default_mark_seen():
+        return True
+
+    @staticmethod
+    def default_action_after_read():
+        return 'nothing'
+
     @fields.depends('ssl')
     def on_change_with_port(self):
         return self.ssl and 993 or 143
@@ -157,9 +180,6 @@ class IMAPServer(ModelSQL, ModelView):
         elif self.search_mode == 'unseen':
             return 'UNSEEN'
         return self.criterion
-
-    def get_readonly(self, name):
-        return True if self.search_mode == 'interval' else None
 
     @classmethod
     @ModelView.button
@@ -196,9 +216,6 @@ class IMAPServer(ModelSQL, ModelView):
             debug=0, identifier=None):
         imapper = cls.get_server(server.host, server.port, server.ssl,
             keyfile, certfile, debug, identifier, server.timeout)
-        # TODO: remove this 'sock' use, when use python >= 3.9.2
-        sock = imapper.socket()
-        sock.settimeout(server.timeout)
         return cls.login(imapper, server.user,
             server.password)
 
@@ -209,19 +226,12 @@ class IMAPServer(ModelSQL, ModelView):
         Obtain an IMAP opened connection
         '''
         try:
-            # TODO: uncomment when use python >= 3.9.2 and remove the bottom
-            #       conditional code that not use timeout.
-            #if ssl:
-            #    return IMAP4_SSL(host=str(host), port=int(port),
-            #        keyfile=keyfile, certfile=certfile, timeout=timeout)
-            #else:
-            #    return IMAP4(host=str(host), port=int(port),
-            #        timeout=timeout)
             if ssl:
                 return IMAP4_SSL(host=str(host), port=int(port),
-                    keyfile=keyfile, certfile=certfile)
+                    keyfile=keyfile, certfile=certfile, timeout=timeout)
             else:
-                return IMAP4(host=str(host), port=int(port))
+                return IMAP4(host=str(host), port=int(port),
+                    timeout=timeout)
         except (IMAP4.error, IMAP4.abort, IMAP4.readonly, socket.error) as e:
             raise UserError(gettext('imap.general_error', msg=e))
 
@@ -248,7 +258,8 @@ class IMAPServer(ModelSQL, ModelView):
         '''
         status = None
         try:
-            status, data = imapper.select(self.folder, self.readonly)
+            readonly = True if self.action_after_read == 'nothing' else False
+            status, data = imapper.select(self.folder, readonly)
         except (IMAP4.error, IMAP4.abort, IMAP4.readonly, socket.error) as e:
             status = 'NO'
             data = e
@@ -287,6 +298,52 @@ class IMAPServer(ModelSQL, ModelView):
         result[emailid] = data
         return result
 
+    def action_after(self, imapper, emailid, action='nothing'):
+        '''
+        Do some extra actions after read the email.
+        '''
+        if not imapper or not emailid:
+            return
+
+        # Mark email as seen if the flag is set to True
+        try:
+            if self.mark_seen:
+                status, data = imapper.store(emailid, '+FLAGS', '\\Seen')
+            else:
+                status = 'OK'
+        except (IMAP4.error, IMAP4.abort, IMAP4.readonly, socket.error) as e:
+            status = 'KO'
+            data = e
+        if status != 'OK':
+            imapper.logout()
+            raise UserError(gettext('imap.fetch_error',
+                email=emailid, msg=data))
+
+        if action == 'move' and self.destination_folder:
+            # Copy the email to the destionation folder
+            try:
+                status, data = imapper.copy(emailid, self.destination_folder)
+            except (IMAP4.error, IMAP4.abort, IMAP4.readonly,
+                    socket.error) as e:
+                status = 'KO'
+                data = e
+            if status != 'OK':
+                imapper.logout()
+                raise UserError(gettext('imap.fetch_error',
+                    email=emailid, msg=data))
+
+            # Delete the email after copied on the destionation folder
+            try:
+                status, data = imapper.store(emailid, '+FLAGS', '\\Deleted')
+            except (IMAP4.error, IMAP4.abort, IMAP4.readonly,
+                    socket.error) as e:
+                status = 'KO'
+                data = e
+            if status != 'OK':
+                imapper.logout()
+                raise UserError(gettext('imap.fetch_error',
+                    email=emailid, msg=data))
+
     def fetch(self, imapper, parts='(UID RFC822)'):
         '''
         Fetch the next set of e-mails according to the configuration defined
@@ -297,6 +354,8 @@ class IMAPServer(ModelSQL, ModelView):
         result = {}
         for emailid in emailids:
             result.update(self.fetch_one(imapper, emailid, parts))
+            self.action_after(imapper, emailid, self.action_after_read)
+        imapper.expunge()
         imapper.close()
         imapper.logout()
         return result
