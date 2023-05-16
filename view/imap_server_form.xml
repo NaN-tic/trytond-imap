@@ -23,6 +23,12 @@
     <field name="offset"/>
     <label name="criterion"/>
     <field name="criterion"/>
+    <label name="mark_seen"/>
+    <field name="mark_seen"/>
+    <label name="action_after_read"/>
+    <field name="action_after_read"/>
+    <label name="destination_folder"/>
+    <field name="destination_folder"/>
     <newline/>
     <separator id="user" string="Login Information" colspan="6"/>
     <label name="email"/>

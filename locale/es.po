@@ -162,6 +162,18 @@ msgctxt "field:imap.server,write_uid:"
 msgid "Write User"
 msgstr "Usuario modificación"
 
+msgctxt "field:imap.server,mark_seen:"
+msgid "Mark as seen"
+msgstr "Marcar como leído"
+
+msgctxt "field:imap.server,action_after_read:"
+msgid "Action after read"
+msgstr "Acción después de leer"
+
+msgctxt "field:imap.server,destination_folder:"
+msgid "Destination folder"
+msgstr "Carpeta destino"
+
 msgctxt "help:imap.server,email:"
 msgid "Default From (if active this option) and Reply Email"
 msgstr ""
@@ -185,6 +197,18 @@ msgstr ""
 msgctxt "help:imap.server,timeout:"
 msgid "Time to wait until connection is established. In seconds."
 msgstr "Tiempo a esperar mientras una conexión es establecida. En segundos"
+
+msgctxt "help:imap.server,mark_seen:"
+msgid "Mark emails as seen on fetch."
+msgstr "Marcar el correo como leído después de descargar."
+
+msgctxt "help:imap.server,action_after_read:"
+msgid "The action to do after each email is readed."
+msgstr "La acción a realizar después de leer cada correo."
+
+msgctxt "help:imap.server,destination_folder:"
+msgid "The folder name where to move to on the server. Absolut path."
+msgstr "El nombre de la carpeta donde mover del servidor. Camino absoluto."
 
 msgctxt "model:imap.server,name:"
 msgid "IMAP Server"
@@ -245,6 +269,14 @@ msgstr "Finalizar"
 msgctxt "selection:imap.server,state:"
 msgid "Draft"
 msgstr "Borrador"
+
+msgctxt "selection:imap.server,action_after_read:"
+msgid "Nothing"
+msgstr "Nada"
+
+msgctxt "selection:imap.server,action_after_read:"
+msgid "Move to a folder"
+msgstr "Mover a una carpeta"
 
 msgctxt "view:imap.server:"
 msgid "Server Information"

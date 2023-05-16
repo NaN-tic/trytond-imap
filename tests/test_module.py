@@ -28,6 +28,8 @@ def create_imap_server(provider):
         user='test@example.com',
         password='testpw',
         offset=1,
+        mark_seen=False,
+        action_after_read='nothing',
         )
     return imap_server
 
