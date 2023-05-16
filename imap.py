@@ -94,7 +94,7 @@ class IMAPServer(ModelSQL, ModelView):
     action_after_read = fields.Selection([
             ('nothing', 'Nothing'),
             ('move', 'Move to a folder')
-            ], 'Action after read', select=True,
+            ], 'Action after read',
         states={
             'readonly': (Eval('state') != 'draft'),
             }, depends=['state'],
