@@ -93,11 +93,9 @@ class IMAPServer(ModelSQL, ModelView):
         help='Mark emails as seen on fetch.')
     action_after_read = fields.Selection([
             ('nothing', 'Nothing'),
-            ('move', 'Move to a folder')
+            ('move', 'Move to a folder'),
             ('delete', 'Delete messages'),
             ], 'Action after read',
-            ('move', 'Move to a folder'),
-            ], 'Action after read', select=True,
         states={
             'readonly': (Eval('state') != 'draft'),
             }, depends=['state'],
