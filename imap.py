@@ -93,7 +93,8 @@ class IMAPServer(ModelSQL, ModelView):
         help='Mark emails as seen on fetch.')
     action_after_read = fields.Selection([
             ('nothing', 'Nothing'),
-            ('move', 'Move to a folder')
+            ('move', 'Move to a folder'),
+            ('delete', 'Delete messages'),
             ], 'Action after read',
         states={
             'readonly': (Eval('state') != 'draft'),
@@ -251,14 +252,14 @@ class IMAPServer(ModelSQL, ModelView):
                 user=user, msg=data))
         return imapper
 
-    def fetch_ids(self, imapper):
+    def select_folder(self, imapper):
         '''
-        Obtain the next set of e-mail IDs according to the configuration
-        defined on the server object.
+        Select the IMAP folder where to interact.
         '''
         status = None
         try:
-            readonly = True if self.action_after_read == 'nothing' else False
+            readonly = (True if self.action_after_read == 'nothing'
+                and not self.mark_seen else False)
             status, data = imapper.select(self.folder, readonly)
         except (IMAP4.error, IMAP4.abort, IMAP4.readonly, socket.error) as e:
             status = 'NO'
@@ -268,6 +269,13 @@ class IMAPServer(ModelSQL, ModelView):
             raise UserError(gettext('imap.select_error',
                 folder=self.folder, msg=data))
 
+    def fetch_ids(self, imapper):
+        '''
+        Obtain the next set of e-mail IDs according to the configuration
+        defined on the server object.
+        '''
+        self.select_folder(imapper)
+        status = None
         try:
             status, data = imapper.search(None, self.criterion_used)
             self.last_retrieve_date = datetime.date.today()
@@ -298,14 +306,12 @@ class IMAPServer(ModelSQL, ModelView):
         result[emailid] = data
         return result
 
-    def action_after(self, imapper, emailid, action='nothing'):
+    def set_flag_seen(self, imapper, emailid):
         '''
-        Do some extra actions after read the email.
+        Mark email as seen if the flag is set to True
         '''
         if not imapper or not emailid:
             return
-
-        # Mark email as seen if the flag is set to True
         try:
             if self.mark_seen:
                 status, data = imapper.store(emailid, '+FLAGS', '\\Seen')
@@ -319,31 +325,6 @@ class IMAPServer(ModelSQL, ModelView):
             raise UserError(gettext('imap.fetch_error',
                 email=emailid, msg=data))
 
-        if action == 'move' and self.destination_folder:
-            # Copy the email to the destionation folder
-            try:
-                status, data = imapper.copy(emailid, self.destination_folder)
-            except (IMAP4.error, IMAP4.abort, IMAP4.readonly,
-                    socket.error) as e:
-                status = 'KO'
-                data = e
-            if status != 'OK':
-                imapper.logout()
-                raise UserError(gettext('imap.fetch_error',
-                    email=emailid, msg=data))
-
-            # Delete the email after copied on the destionation folder
-            try:
-                status, data = imapper.store(emailid, '+FLAGS', '\\Deleted')
-            except (IMAP4.error, IMAP4.abort, IMAP4.readonly,
-                    socket.error) as e:
-                status = 'KO'
-                data = e
-            if status != 'OK':
-                imapper.logout()
-                raise UserError(gettext('imap.fetch_error',
-                    email=emailid, msg=data))
-
     def fetch(self, imapper, parts='(UID RFC822)'):
         '''
         Fetch the next set of e-mails according to the configuration defined
@@ -354,8 +335,62 @@ class IMAPServer(ModelSQL, ModelView):
         result = {}
         for emailid in emailids:
             result.update(self.fetch_one(imapper, emailid, parts))
-            self.action_after(imapper, emailid, self.action_after_read)
-        imapper.expunge()
+            self.set_flag_seen(imapper, emailid)
         imapper.close()
         imapper.logout()
         return result
+
+    def copy_email_to(self, imapper, emailid):
+        '''
+        Copy the email to the destionation folder deffined in the configuration
+        server.
+        '''
+        try:
+            status, data = imapper.copy(emailid, self.destination_folder)
+        except (IMAP4.error, IMAP4.abort, IMAP4.readonly,
+                socket.error) as e:
+            status = 'KO'
+            data = e
+        if status != 'OK':
+            imapper.logout()
+            raise UserError(gettext('imap.fetch_error',
+                email=emailid, msg=data))
+
+    def delete_email(self, imapper, emailid):
+        '''
+        Delete the email from the main folder deffined in the configuration
+        server.
+        '''
+        try:
+            status, data = imapper.store(emailid, '+FLAGS', '\\Deleted')
+        except (IMAP4.error, IMAP4.abort, IMAP4.readonly,
+                socket.error) as e:
+            status = 'KO'
+            data = e
+        if status != 'OK':
+            imapper.logout()
+            raise UserError(gettext('imap.fetch_error',
+                email=emailid, msg=data))
+
+    def action_after(self, imapper, emailids=None):
+        '''
+        With specific IDs or the same filter deffined for the fetch,
+        do some extra actions on this emails in IMAP server.
+        '''
+        # select IMAP folder before act on any email of this folder
+        self.select_folder(imapper)
+
+        status = None
+        if ((self.action_after_read == 'move' and self.destination_folder)
+                or self.action_after_read == 'delete'):
+            if not emailids:
+                emailids = self.fetch_ids(imapper)
+            for emailid in emailids:
+                if self.action_after_read == 'move':
+                    self.move_email_to(imapper, emailid)
+                self.delete_email(imapper, emailid)
+            if emailids:
+                imapper.expunge()
+        imapper.close()
+        imapper.logout()
+        return status
