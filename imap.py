@@ -387,7 +387,7 @@ class IMAPServer(ModelSQL, ModelView):
                 emailids = self.fetch_ids(imapper)
             for emailid in emailids:
                 if self.action_after_read == 'move':
-                    self.move_email_to(imapper, emailid)
+                    self.copy_email_to(imapper, emailid)
                 self.delete_email(imapper, emailid)
             if emailids:
                 imapper.expunge()
