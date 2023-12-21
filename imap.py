@@ -208,7 +208,8 @@ class IMAPServer(ModelSQL, ModelView):
         "Checks IMAP credentials and confirms if connection works"
         for server in servers:
             imapper = cls.connect(server)
-            imapper.logout()
+            imapper.select()
+            cls.logout(imapper)
             raise UserError(gettext('imap.connection_successful',
                 account=server.rec_name))
 
@@ -247,10 +248,18 @@ class IMAPServer(ModelSQL, ModelView):
             status = 'NO'
             data = e
         if status != 'OK':
-            imapper.logout()
+            cls.logout(imapper)
             raise UserError(gettext('imap.login_error',
                 user=user, msg=data))
         return imapper
+
+    @classmethod
+    def logout(cls, imapper):
+        try:
+            imapper.close()    # which also expunges the mailbox
+        except:
+            pass
+        imapper.logout()
 
     def select_folder(self, imapper):
         '''
@@ -265,7 +274,7 @@ class IMAPServer(ModelSQL, ModelView):
             status = 'NO'
             data = e
         if status != 'OK':
-            imapper.logout()
+            cls.logout(imapper)
             raise UserError(gettext('imap.select_error',
                 folder=self.folder, msg=data))
 
@@ -284,7 +293,7 @@ class IMAPServer(ModelSQL, ModelView):
             status = 'NO'
             data = e
         if status != 'OK':
-            imapper.logout()
+            cls.logout(imapper)
             raise UserError(gettext('imap.search_error',
                 criteria=self.criterion_used, msg=data))
         return data[0].split()
@@ -300,7 +309,7 @@ class IMAPServer(ModelSQL, ModelView):
             status = 'KO'
             data = e
         if status != 'OK':
-            imapper.logout()
+            cls.logout(imapper)
             raise UserError(gettext('imap.fetch_error',
                 email=emailid, msg=data))
         result[emailid] = data
@@ -321,7 +330,7 @@ class IMAPServer(ModelSQL, ModelView):
             status = 'KO'
             data = e
         if status != 'OK':
-            imapper.logout()
+            cls.logout(imapper)
             raise UserError(gettext('imap.fetch_error',
                 email=emailid, msg=data))
 
@@ -336,8 +345,6 @@ class IMAPServer(ModelSQL, ModelView):
         for emailid in emailids:
             result.update(self.fetch_one(imapper, emailid, parts))
             self.set_flag_seen(imapper, emailid)
-        imapper.close()
-        imapper.logout()
         return result
 
     def copy_email_to(self, imapper, emailid):
@@ -352,7 +359,7 @@ class IMAPServer(ModelSQL, ModelView):
             status = 'KO'
             data = e
         if status != 'OK':
-            imapper.logout()
+            cls.logout(imapper)
             raise UserError(gettext('imap.fetch_error',
                 email=emailid, msg=data))
 
@@ -368,7 +375,7 @@ class IMAPServer(ModelSQL, ModelView):
             status = 'KO'
             data = e
         if status != 'OK':
-            imapper.logout()
+            cls.logout(imapper)
             raise UserError(gettext('imap.fetch_error',
                 email=emailid, msg=data))
 
@@ -391,6 +398,4 @@ class IMAPServer(ModelSQL, ModelView):
                 self.delete_email(imapper, emailid)
             if emailids:
                 imapper.expunge()
-        imapper.close()
-        imapper.logout()
         return status
