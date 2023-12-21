@@ -274,7 +274,7 @@ class IMAPServer(ModelSQL, ModelView):
             status = 'NO'
             data = e
         if status != 'OK':
-            cls.logout(imapper)
+            self.logout(imapper)
             raise UserError(gettext('imap.select_error',
                 folder=self.folder, msg=data))
 
@@ -293,7 +293,7 @@ class IMAPServer(ModelSQL, ModelView):
             status = 'NO'
             data = e
         if status != 'OK':
-            cls.logout(imapper)
+            self.logout(imapper)
             raise UserError(gettext('imap.search_error',
                 criteria=self.criterion_used, msg=data))
         return data[0].split()
@@ -309,7 +309,7 @@ class IMAPServer(ModelSQL, ModelView):
             status = 'KO'
             data = e
         if status != 'OK':
-            cls.logout(imapper)
+            self.logout(imapper)
             raise UserError(gettext('imap.fetch_error',
                 email=emailid, msg=data))
         result[emailid] = data
@@ -330,7 +330,7 @@ class IMAPServer(ModelSQL, ModelView):
             status = 'KO'
             data = e
         if status != 'OK':
-            cls.logout(imapper)
+            self.logout(imapper)
             raise UserError(gettext('imap.fetch_error',
                 email=emailid, msg=data))
 
@@ -359,7 +359,7 @@ class IMAPServer(ModelSQL, ModelView):
             status = 'KO'
             data = e
         if status != 'OK':
-            cls.logout(imapper)
+            self.logout(imapper)
             raise UserError(gettext('imap.fetch_error',
                 email=emailid, msg=data))
 
@@ -375,7 +375,7 @@ class IMAPServer(ModelSQL, ModelView):
             status = 'KO'
             data = e
         if status != 'OK':
-            cls.logout(imapper)
+            self.logout(imapper)
             raise UserError(gettext('imap.fetch_error',
                 email=emailid, msg=data))
 
