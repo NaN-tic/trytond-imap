@@ -24,15 +24,15 @@ class IMAPServer(ModelSQL, ModelView):
     host = fields.Char('Server', required=True,
         states={
             'readonly': (Eval('state') != 'draft'),
-            }, depends=['state'])
+            })
     ssl = fields.Boolean('SSL',
         states={
             'readonly': (Eval('state') != 'draft'),
-        }, depends=['state'])
+        })
     port = fields.Integer('Port', required=True,
         states={
             'readonly': (Eval('state') != 'draft'),
-            }, depends=['state'])
+            })
 
     folder = fields.Char('Folder', required=True,
         states={
@@ -48,22 +48,22 @@ class IMAPServer(ModelSQL, ModelView):
             'readonly': (Eval('state') != 'draft'),
             'invisible': Bool(Eval('search_mode') != 'custom'),
             'required': Bool(Eval('search_mode') == 'custom')
-            }, depends=['state', 'search_mode'])
+            })
     criterion_used = fields.Function(fields.Char('Criterion used'),
         'get_criterion_used')
     email = fields.Char('Email', required=True,
         states={
             'readonly': (Eval('state') != 'draft'),
-        }, depends=['state'],
+        },
         help='Default From (if active this option) and Reply Email')
     user = fields.Char('Username', required=True,
         states={
             'readonly': (Eval('state') != 'draft'),
-        }, depends=['state'])
+        })
     password = fields.Char('Password', required=True, strip=False,
         states={
             'readonly': (Eval('state') != 'draft'),
-        }, depends=['state'])
+        })
     state = fields.Selection([
             ('draft', 'Draft'),
             ('done', 'Done'),
@@ -75,7 +75,7 @@ class IMAPServer(ModelSQL, ModelView):
             ], 'Search Mode',
         states={
             'readonly': (Eval('state') != 'draft'),
-            }, depends=['state', 'search_mode'],
+            },
         help='The criteria to filter when download messages. By '
             'default is only take the unread mesages, but it is possible '
             'to take a time interval or a custom selection')
@@ -83,12 +83,12 @@ class IMAPServer(ModelSQL, ModelView):
         states={
                 'invisible': Bool(Eval('search_mode') != 'interval'),
                 'readonly': (Eval('state') != 'draft'),
-                }, depends=['state', 'search_mode'])
+                })
     offset = fields.Integer('Days Offset', domain=[('offset', '>=', 1)],
         states={
                 'invisible': Bool(Eval('search_mode') != 'interval'),
                 'readonly': (Eval('state') != 'draft'),
-                }, depends=['state', 'search_mode'], required=True)
+                }, required=True)
     mark_seen = fields.Boolean('Mark as seen',
         help='Mark emails as seen on fetch.')
     action_after_read = fields.Selection([
@@ -98,14 +98,14 @@ class IMAPServer(ModelSQL, ModelView):
             ], 'Action after read',
         states={
             'readonly': (Eval('state') != 'draft'),
-            }, depends=['state'],
+            },
         help='The action to do after each email is readed.')
     destination_folder = fields.Char('Move Folder',
         states={
             'invisible': Bool(Eval('action_after_read') != 'move'),
             'required': Bool(Eval('action_after_read') == 'move'),
             'readonly': (Eval('state') != 'draft'),
-            }, depends=['state', 'action_after_read'],
+            },
             help='The folder name where to move to on the server.'
             ' Absolut path')
 
