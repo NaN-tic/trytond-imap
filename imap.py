@@ -257,9 +257,9 @@ class IMAPServer(ModelSQL, ModelView):
     def logout(cls, imapper):
         try:
             imapper.close()    # which also expunges the mailbox
+            imapper.logout()
         except:
             pass
-        imapper.logout()
 
     def select_folder(self, imapper):
         '''
