@@ -3,6 +3,7 @@
      copyright notices and license terms. -->
 <tree>
     <field name="name"/>
+    <field name="types"/>
     <field name="host"/>
     <field name="ssl"/>
     <field name="port"/>

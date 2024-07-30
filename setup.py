@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from setuptools import setup
-import re
-import os
 import io
+import os
+import re
 from configparser import ConfigParser
+
+from setuptools import setup
 
 MODULE = 'imap'
 PREFIX = 'nantic'
@@ -13,9 +14,9 @@ MODULE2PREFIX = {}
 
 
 def read(fname):
-    return io.open(
-        os.path.join(os.path.dirname(__file__), fname),
-        'r', encoding='utf-8').read()
+    return io.open(os.path.join(os.path.dirname(__file__), fname),
+                   'r',
+                   encoding='utf-8').read()
 
 
 def get_require_version(name):
@@ -23,9 +24,9 @@ def get_require_version(name):
         require = '%s >= %s.%s.dev0, < %s.%s'
     else:
         require = '%s >= %s.%s, < %s.%s'
-    require %= (name, major_version, minor_version,
-        major_version, minor_version + 1)
+    require %= (name, major_version, minor_version, major_version, minor_version + 1)
     return require
+
 
 config = ConfigParser()
 config.readfp(open('tryton.cfg'))
@@ -38,15 +39,12 @@ major_version, minor_version, _ = version.split('.', 2)
 major_version = int(major_version)
 minor_version = int(minor_version)
 
-requires = [
-    'imaplib2'
-]
+requires = ['imaplib2']
 for dep in info.get('depends', []):
     if not re.match(r'(ir|res)(\W|$)', dep):
         prefix = MODULE2PREFIX.get(dep, 'trytond')
         requires.append(get_require_version('%s_%s' % (prefix, dep)))
 requires.append(get_require_version('trytond'))
-
 
 tests_require = [get_require_version('proteus')]
 dependency_links = []
@@ -54,7 +52,8 @@ if minor_version % 2:
     # Add development index for testing with proteus
     dependency_links.append('https://trydevpi.tryton.org/')
 
-setup(name='%s_%s' % (PREFIX, MODULE),
+setup(
+    name='%s_%s' % (PREFIX, MODULE),
     version=version,
     description='Tryton Imap Module',
     long_description=read('README'),
@@ -65,11 +64,12 @@ setup(name='%s_%s' % (PREFIX, MODULE),
     packages=[
         'trytond.modules.%s' % MODULE,
         'trytond.modules.%s.tests' % MODULE,
-        ],
+    ],
     package_data={
-        'trytond.modules.%s' % MODULE: (info.get('xml', [])
-            + ['tryton.cfg', 'view/*.xml', 'locale/*.po', 'tests/*.rst']),
-        },
+        'trytond.modules.%s' % MODULE:
+        (info.get('xml', []) +
+         ['tryton.cfg', 'view/*.xml', 'locale/*.po', 'tests/*.rst']),
+    },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Plugins',
@@ -89,7 +89,7 @@ setup(name='%s_%s' % (PREFIX, MODULE),
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Office/Business',
-        ],
+    ],
     license='GPL-3',
     install_requires=requires,
     dependency_links=dependency_links,
@@ -102,4 +102,4 @@ setup(name='%s_%s' % (PREFIX, MODULE),
     test_loader='trytond.test_loader:Loader',
     tests_require=tests_require,
     use_2to3=True,
-    )
+)
