@@ -7,12 +7,11 @@ import socket
 from imaplib import IMAP4, IMAP4_SSL
 
 from google_auth_oauthlib.flow import Flow
-
+from trytond.config import config
 from trytond.exceptions import UserError
 from trytond.i18n import gettext
 from trytond.model import ModelSQL, ModelView, fields
 from trytond.pyson import Bool, Eval
-from trytond.config import config
 
 __all__ = ['IMAPServer']
 
@@ -25,8 +24,8 @@ if gmail_config:
     google_oauth = Flow.from_client_config(
         json.loads(gmail_config),
         scopes=[
-            'https://mail.google.com/', 'https://www.googleapis.com/auth/userinfo.email',
-            'openid'
+            'https://mail.google.com/',
+            'https://www.googleapis.com/auth/userinfo.email', 'openid'
         ],
         redirect_uri='http://localhost:8000/tryton/oauth',
     )
@@ -73,38 +72,41 @@ class IMAPServer(ModelSQL, ModelView):
                           },
                           depends=['state'])
 
-    folder = fields.Char('Folder',
-                         required=True,
-                         states={
-                             'readonly': (Eval('state') != 'draft'),
-                         },
-                         help='The folder name where to read from on the server.')
-    timeout = fields.Integer('Time Out',
-                             required=True,
-                             states={
-                                 'readonly': (Eval('state') != 'draft'),
-                             },
-                             help=('Time to wait until connection is established. '
-                                   'In seconds.'))
+    folder = fields.Char(
+        'Folder',
+        required=True,
+        states={
+            'readonly': (Eval('state') != 'draft'),
+        },
+        help='The folder name where to read from on the server.')
+    timeout = fields.Integer(
+        'Time Out',
+        required=True,
+        states={
+            'readonly': (Eval('state') != 'draft'),
+        },
+        help=('Time to wait until connection is established. '
+              'In seconds.'))
     criterion = fields.Char('Criterion',
                             required=False,
                             states={
-                                'readonly': (Eval('state') != 'draft'), 'invisible':
-                                Bool(Eval('search_mode') != 'custom'), 'required':
+                                'readonly': (Eval('state') != 'draft'),
+                                'invisible':
+                                Bool(Eval('search_mode') != 'custom'),
+                                'required':
                                 Bool(Eval('search_mode') == 'custom')
                             },
                             depends=['state', 'search_mode'])
     criterion_used = fields.Function(fields.Char('Criterion used'),
                                      'get_criterion_used')
-    email = fields.Char('Email',
-                        states={
-                            'readonly':
-                            Bool(
-                                Eval('state') != 'draft'
-                                or Eval('types') != 'generic'),
-                        },
-                        depends=['state'],
-                        help='Default From (if active this option) and Reply Email')
+    email = fields.Char(
+        'Email',
+        states={
+            'readonly':
+            Bool(Eval('state') != 'draft' or Eval('types') != 'generic'),
+        },
+        depends=['state'],
+        help='Default From (if active this option) and Reply Email')
     user = fields.Char('Username',
                        states={
                            'readonly': (Eval('state') != 'draft'),
@@ -128,7 +130,8 @@ class IMAPServer(ModelSQL, ModelView):
                              readonly=True,
                              required=True)
     search_mode = fields.Selection(
-        [('unseen', 'Unseen'), ('interval', 'Time Interval'), ('custom', 'Custom')],
+        [('unseen', 'Unseen'), ('interval', 'Time Interval'),
+         ('custom', 'Custom')],
         'Search Mode',
         states={
             'readonly': (Eval('state') != 'draft'),
@@ -137,22 +140,24 @@ class IMAPServer(ModelSQL, ModelView):
         help='The criteria to filter when download messages. By '
         'default is only take the unread mesages, but it is possible '
         'to take a time interval or a custom selection')
-    last_retrieve_date = fields.Date('Last Retrieve Date',
-                                     states={
-                                         'invisible':
-                                         Bool(Eval('search_mode') != 'interval'),
-                                         'readonly': (Eval('state') != 'draft'),
-                                     },
-                                     depends=['state', 'search_mode'])
+    last_retrieve_date = fields.Date(
+        'Last Retrieve Date',
+        states={
+            'invisible': Bool(Eval('search_mode') != 'interval'),
+            'readonly': (Eval('state') != 'draft'),
+        },
+        depends=['state', 'search_mode'])
     offset = fields.Integer('Days Offset',
                             domain=[('offset', '>=', 1)],
                             states={
-                                'invisible': Bool(Eval('search_mode') != 'interval'),
+                                'invisible':
+                                Bool(Eval('search_mode') != 'interval'),
                                 'readonly': (Eval('state') != 'draft'),
                             },
                             depends=['state', 'search_mode'],
                             required=True)
-    mark_seen = fields.Boolean('Mark as seen', help='Mark emails as seen on fetch.')
+    mark_seen = fields.Boolean('Mark as seen',
+                               help='Mark emails as seen on fetch.')
     action_after_read = fields.Selection(
         [
             ('nothing', 'Nothing'),
@@ -189,20 +194,25 @@ class IMAPServer(ModelSQL, ModelView):
     # Google OAuth
     token_refresh = fields.Char('Refresh Token',
                                 states={
-                                    'invisible': Bool(Eval('types') != 'google'),
+                                    'invisible':
+                                    Bool(Eval('types') != 'google'),
                                 })
 
     @classmethod
     def __setup__(cls):
         super(IMAPServer, cls).__setup__()
         cls._buttons.update({
-            'test': {}, 'draft': {
+            'test': {},
+            'draft': {
                 'invisible': Eval('state') == 'draft',
-            }, 'done': {
+            },
+            'done': {
                 'invisible': Eval('state') == 'done',
-            }, 'google': {
+            },
+            'google': {
                 'invisible': Bool(Eval('types') != 'google'),
-            }, 'outlook': {
+            },
+            'outlook': {
                 'invisible': Bool(Eval('types') != 'outlook'),
             }
         })
@@ -265,7 +275,7 @@ class IMAPServer(ModelSQL, ModelView):
         elif self.types == 'google':
             return 'imap.gmail.com'
         else:
-            return 'imap.gmail.com' # FIXME: Not valid, isn't for Microsoft
+            return 'imap.gmail.com'  # FIXME: Not valid, isn't for Microsoft
 
     @fields.depends('types')
     def on_change_with_ssl(self):
@@ -329,7 +339,8 @@ class IMAPServer(ModelSQL, ModelView):
             if server.draft:
                 return
 
-            (access, state) = google_oauth.authorization_url(access_type='offline', include_granted_scopes='true')
+            (access, state) = google_oauth.authorization_url(
+                access_type='offline', include_granted_scopes='true')
             server.session_id = state
 
             server.save()
@@ -359,7 +370,12 @@ class IMAPServer(ModelSQL, ModelView):
             }
 
     @classmethod
-    def connect(cls, server, keyfile=None, certfile=None, debug=0, identifier=None):
+    def connect(cls,
+                server,
+                keyfile=None,
+                certfile=None,
+                debug=0,
+                identifier=None):
 
         imapper = cls.get_server(server.host, server.port, server.ssl, keyfile,
                                  certfile, debug, identifier, server.timeout)
@@ -367,9 +383,9 @@ class IMAPServer(ModelSQL, ModelView):
         if server.types == 'generic':
             return cls.login(imapper, server.user, server.password)
         elif server.types == 'google':
-            return cls.login(imapper, 'XOAUTH2',
-                             f'user={server.email}\1auth=Bearer {server.token}\1\1',
-                             True)
+            return cls.login(
+                imapper, 'XOAUTH2',
+                f'user={server.email}\1auth=Bearer {server.token}\1\1', True)
 
     @classmethod
     def get_server(cls,
@@ -458,7 +474,9 @@ class IMAPServer(ModelSQL, ModelView):
         if status != 'OK':
             self.logout(imapper)
             raise UserError(
-                gettext('imap.search_error', criteria=self.criterion_used, msg=data))
+                gettext('imap.search_error',
+                        criteria=self.criterion_used,
+                        msg=data))
         return data[0].split()
 
     def fetch_one(self, imapper, emailid, parts='(UID RFC822)'):
@@ -473,7 +491,8 @@ class IMAPServer(ModelSQL, ModelView):
             data = e
         if status != 'OK':
             self.logout(imapper)
-            raise UserError(gettext('imap.fetch_error', email=emailid, msg=data))
+            raise UserError(gettext('imap.fetch_error', email=emailid,
+                                    msg=data))
         result[emailid] = data
         return result
 
@@ -493,7 +512,8 @@ class IMAPServer(ModelSQL, ModelView):
             data = e
         if status != 'OK':
             self.logout(imapper)
-            raise UserError(gettext('imap.fetch_error', email=emailid, msg=data))
+            raise UserError(gettext('imap.fetch_error', email=emailid,
+                                    msg=data))
 
     def fetch(self, imapper, parts='(UID RFC822)'):
         '''
@@ -520,7 +540,8 @@ class IMAPServer(ModelSQL, ModelView):
             data = e
         if status != 'OK':
             self.logout(imapper)
-            raise UserError(gettext('imap.fetch_error', email=emailid, msg=data))
+            raise UserError(gettext('imap.fetch_error', email=emailid,
+                                    msg=data))
 
     def delete_email(self, imapper, emailid):
         '''
@@ -534,7 +555,8 @@ class IMAPServer(ModelSQL, ModelView):
             data = e
         if status != 'OK':
             self.logout(imapper)
-            raise UserError(gettext('imap.fetch_error', email=emailid, msg=data))
+            raise UserError(gettext('imap.fetch_error', email=emailid,
+                                    msg=data))
 
     def action_after(self, imapper, emailids=None):
         '''

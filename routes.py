@@ -1,13 +1,16 @@
-import logging
 import json
+import logging
+
 import googleapiclient.discovery
 import googleapiclient.errors
 import requests
 from trytond.protocols.wrappers import Response, with_pool, with_transaction
 from trytond.wsgi import app
+
 from . import imap
 
 logger = logging.getLogger(__name__)
+
 
 @app.route('/<database_name>/oauth', methods={'GET'})
 @with_pool
@@ -20,7 +23,8 @@ def google(request, pool):
     imap.google_oauth.fetch_token(authorization_response=request.url)
 
     if not record or record.session_id != request.args['state']:
-        return Response('<h1>Bad Auth</h1>', 400, content_type='text/html') # FIXME: Demasiado cutre
+        return Response('<h1>Bad Auth</h1>', 400,
+                        content_type='text/html')  # FIXME: Demasiado cutre
 
     key = imap.google_oauth.credentials
     service = googleapiclient.discovery.build('oauth2', 'v2', credentials=key)
@@ -29,9 +33,10 @@ def google(request, pool):
         user = service.userinfo().get().execute()
         email = user['email']
     except googleapiclient.errors.HttpError as e:
-        return Response(f'<h1>Error obtaining info</h1><p>{e}</p>', # FIXME: Demasiado cutre
-                        500,
-                        content_type='text/html')
+        return Response(
+            f'<h1>Error obtaining info</h1><p>{e}</p>',  # FIXME: Demasiado cutre
+            500,
+            content_type='text/html')
 
     record.email = email
     record.token = key.token
@@ -39,7 +44,8 @@ def google(request, pool):
     record.session_id = None
     record.save()
 
-    return Response('<h1>Good Auth</h1>', 200, content_type='text/html') # FIXME: Demasiado cutre
+    return Response('<h1>Good Auth</h1>', 200,
+                    content_type='text/html')  # FIXME: Demasiado cutre
 
 
 @app.route('/<database_name>/oauth/outlook', methods={'GET'})
@@ -62,10 +68,12 @@ def outlook(request, pool):
         credentials = json.load(f)
 
     data = {
-        'CLIENT_ID': credentials['CLIENT_ID'], 'CLIENT_SECRET':
-        credentials['CLIENT_SECRET'], 'GRANT_TYPE': 'AUTHORIZATION_CODE', 'CODE':
-        code, 'REDIRECT_URI': credentials['REDIRECT_URI'], 'SCOPE':
-        credentials['SCOPES']
+        'CLIENT_ID': credentials['CLIENT_ID'],
+        'CLIENT_SECRET': credentials['CLIENT_SECRET'],
+        'GRANT_TYPE': 'AUTHORIZATION_CODE',
+        'CODE': code,
+        'REDIRECT_URI': credentials['REDIRECT_URI'],
+        'SCOPE': credentials['SCOPES']
     }
 
     response = requests.post(credentials['TOKEN_URL'], data=data)
@@ -83,9 +91,10 @@ def outlook(request, pool):
         user_info = response.json()
     else:
         logger.error(f'Error {response.status_code} obtaining info:\n'
-            '{response.content}')
-        return Response('<h1>Error obtaining info</h1>', 500,
-            content_type='text/html')
+                     '{response.content}')
+        return Response('<h1>Error obtaining info</h1>',
+                        500,
+                        content_type='text/html')
 
     email = user_info.get('mail')
 

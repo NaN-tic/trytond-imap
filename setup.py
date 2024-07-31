@@ -24,7 +24,8 @@ def get_require_version(name):
         require = '%s >= %s.%s.dev0, < %s.%s'
     else:
         require = '%s >= %s.%s, < %s.%s'
-    require %= (name, major_version, minor_version, major_version, minor_version + 1)
+    require %= (name, major_version, minor_version, major_version,
+                minor_version + 1)
     return require
 
 
