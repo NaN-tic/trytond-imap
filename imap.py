@@ -20,14 +20,16 @@ _IMAP_DATE_FORMAT = "%d-%b-%Y"
 
 logger = logging.getLogger(__name__)
 
-google_oauth = Flow.from_client_config(
-    json.loads(config.get('email', 'gmail')),
-    scopes=[
-        'https://mail.google.com/', 'https://www.googleapis.com/auth/userinfo.email',
-        'openid'
-    ],
-    redirect_uri='http://localhost:8000/tryton/oauth',
-)
+gmail_config = config.get('email', 'gmail')
+if gmail_config:
+    google_oauth = Flow.from_client_config(
+        json.loads(gmail_config),
+        scopes=[
+            'https://mail.google.com/', 'https://www.googleapis.com/auth/userinfo.email',
+            'openid'
+        ],
+        redirect_uri='http://localhost:8000/tryton/oauth',
+    )
 #google_oauth = Flow.from_client_secrets_file(
 #    'config/tryton_gmail.json',
 #    scopes=[
