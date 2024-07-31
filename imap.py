@@ -343,7 +343,7 @@ class IMAPServer(ModelSQL, ModelView):
         for server in servers:
 
             with open('ms_credentials.json', 'r') as f:
-                credentials = json.load(f)
+                json.load(f)
 
             base_url = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize'
             #auth_url = f'{base_url}?client_id={credentials['CLIENT_ID']}&response_type=code&redirect_uri={credentials['REDIRECT_URI']}&response_mode=query&scope={credentials['SCOPE']}'

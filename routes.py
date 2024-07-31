@@ -1,15 +1,13 @@
+import logging
 import json
-import os  # TODO Quitar para eliminar el permiso temporal de NO HTTPS
-
 import googleapiclient.discovery
 import googleapiclient.errors
 import requests
-
 from trytond.protocols.wrappers import Response, with_pool, with_transaction
-from trytond.transaction import Transaction
 from trytond.wsgi import app
-
 from . import imap
+
+logger = logging.getLogger(__name__)
 
 @app.route('/<database_name>/oauth', methods={'GET'})
 @with_pool
@@ -41,7 +39,7 @@ def google(request, pool):
     record.session_id = None
     record.save()
 
-    return Response(f'<h1>Good Auth</h1>', 200, content_type='text/html') # FIXME: Demasiado cutre
+    return Response('<h1>Good Auth</h1>', 200, content_type='text/html') # FIXME: Demasiado cutre
 
 
 @app.route('/<database_name>/oauth/outlook', methods={'GET'})
@@ -84,9 +82,10 @@ def outlook(request, pool):
     if response.status_code == 200:
         user_info = response.json()
     else:
-        return Response(f'<h1>Error obtaining info</h1><p>{e}</p>',
-                        500,
-                        content_type='text/html')
+        logger.error(f'Error {response.status_code} obtaining info:\n'
+            '{response.content}')
+        return Response('<h1>Error obtaining info</h1>', 500,
+            content_type='text/html')
 
     email = user_info.get('mail')
 
@@ -94,4 +93,4 @@ def outlook(request, pool):
     record.token = token
     record.save()
 
-    return Response(f'<h1>Good Auth</h1>', 200, content_type='text/html')
+    return Response('<h1>Good Auth</h1>', 200, content_type='text/html')
