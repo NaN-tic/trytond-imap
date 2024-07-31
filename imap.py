@@ -277,7 +277,7 @@ class IMAPServer(ModelSQL, ModelView):
         else:
             return 'imap.gmail.com'  # FIXME: Not valid, isn't for Microsoft
 
-    @fields.depends('types')
+    @fields.depends('types', 'ssl')
     def on_change_with_ssl(self):
         if self.types == 'generic':
             return self.ssl
