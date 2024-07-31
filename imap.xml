@@ -102,6 +102,28 @@
             <field name="group" ref="group_imap_admin"/>
         </record>
 
+        <record model="ir.model.button" id="imap_google_oauth">
+            <field name="name">google</field>
+            <field name="string">Google OAuth</field>
+            <field name="model" search="[('model', '=', 'imap.server')]"/>
+        </record>
+        <record model="ir.model.button-res.group"
+            id="imap_google_oauth_button_group">
+            <field name="button" ref="imap_google_oauth"/>
+            <field name="group" ref="group_imap_admin"/>
+        </record>
+
+        <record model="ir.model.button" id="imap_outlook_oauth">
+            <field name="name">outlook</field>
+            <field name="string">Outlook OAuth</field>
+            <field name="model" search="[('model', '=', 'imap.server')]"/>
+        </record>
+        <record model="ir.model.button-res.group"
+            id="imap_outlook_oauth_button_group">
+            <field name="button" ref="imap_outlook_oauth"/>
+            <field name="group" ref="group_imap_admin"/>
+        </record>
+
         <!-- menus -->
         <menuitem id="menu_imap" name="IMAP" parent="ir.menu_administration"/>
 

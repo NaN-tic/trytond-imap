@@ -1,4 +1,3 @@
-
 # This file is part of Tryton.  The COPYRIGHT file at the top level of
 # this repository contains the full copyright notices and license terms.
 
@@ -9,10 +8,10 @@ except ImportError:
     # Python < 3.3
     from mock import MagicMock
 
-from trytond.tests.test_tryton import ModuleTestCase, with_transaction
+from imaplib import IMAP4, IMAP4_SSL
 
 from trytond.pool import Pool
-from imaplib import IMAP4, IMAP4_SSL
+from trytond.tests.test_tryton import ModuleTestCase, with_transaction
 
 
 def create_imap_server(provider):
@@ -30,7 +29,7 @@ def create_imap_server(provider):
         offset=1,
         mark_seen=False,
         action_after_read='nothing',
-        )
+    )
     return imap_server
 
 
@@ -49,9 +48,9 @@ def create_mock_mails():
         + test_email_body
 
     imap_emails = {
-        "1": ("OK", (("1", test_email_1),)),
-        "2": ("OK", (("2", test_email_2),)),
-        }
+        "1": ("OK", (("1", test_email_1), )),
+        "2": ("OK", (("2", test_email_2), )),
+    }
 
     return imap_emails
 
@@ -60,7 +59,7 @@ def create_mock_imap_conn(ssl, mails):
     '''
     Create a mocked imap connection
     '''
-    mail_list = ("OK", (" ".join(list(mails.keys())),))
+    mail_list = ("OK", (" ".join(list(mails.keys())), ))
     if ssl:
         mock_conn = MagicMock(spec=IMAP4_SSL)
     else:
@@ -68,11 +67,9 @@ def create_mock_imap_conn(ssl, mails):
 
     mock_conn.login.return_value = ('OK', [])
     mock_conn.capability.return_value = ('OK', ["A B C"])
-    mock_conn.search = MagicMock(
-        return_value=mail_list)
+    mock_conn.search = MagicMock(return_value=mail_list)
     # we ignore the second arg as the data item/mime-part is constant (RFC822)
-    mock_conn.fetch = MagicMock(
-        side_effect=lambda x, _: mails[x])
+    mock_conn.fetch = MagicMock(side_effect=lambda x, _: mails[x])
     mock_conn.select = MagicMock(return_value=mail_list)
 
     return mock_conn
