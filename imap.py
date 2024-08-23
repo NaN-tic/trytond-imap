@@ -6,12 +6,15 @@ import logging
 import socket
 from imaplib import IMAP4, IMAP4_SSL
 
+from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
+from google.auth.transport.requests import Request
+
+from trytond.model import ModelSQL, ModelView, fields, DictSchemaMixin
 from trytond.config import config
+from trytond.pyson import Bool, Eval
 from trytond.exceptions import UserError
 from trytond.i18n import gettext
-from trytond.model import ModelSQL, ModelView, fields
-from trytond.pyson import Bool, Eval
 
 __all__ = ['IMAPServer']
 
@@ -19,24 +22,18 @@ _IMAP_DATE_FORMAT = "%d-%b-%Y"
 
 logger = logging.getLogger(__name__)
 
-gmail_config = config.get('email', 'gmail')
-if gmail_config:
-    google_oauth = Flow.from_client_config(
-        json.loads(gmail_config),
-        scopes=[
-            'https://mail.google.com/',
-            'https://www.googleapis.com/auth/userinfo.email', 'openid'
-        ],
-        redirect_uri='http://localhost:8000/tryton/oauth',
-    )
-#google_oauth = Flow.from_client_secrets_file(
-#    'config/tryton_gmail.json',
-#    scopes=[
-#        'https://mail.google.com/', 'https://www.googleapis.com/auth/userinfo.email',
-#        'openid'
-#    ],
-#    redirect_uri='http://localhost:8000/tryton/oauth',
-#)
+# Define the client secret information
+GOOGLE_CLIENT_SECRETS = config.get('oauth', 'google')
+
+# Define the scopes
+GOOGLE_SCOPES_STR = config.get('oauth', 'google_scopes')
+GOOGLE_SCOPES = GOOGLE_SCOPES_STR.split(',') if GOOGLE_SCOPES_STR else []
+GOOGLE_SCOPES = [scope.strip() for scope in GOOGLE_SCOPES]
+
+# Define the redirect URI
+GOOGLE_REDIRECT_URI = config.get('oauth', 'google_redirect_uri')
+
+OUTLOOK_URL = config.get('oauth', 'outlook_uri')
 
 
 class IMAPServer(ModelSQL, ModelView):
@@ -44,159 +41,116 @@ class IMAPServer(ModelSQL, ModelView):
     __name__ = 'imap.server'
     name = fields.Char('Name', required=True)
     types = fields.Selection([
-        ('generic', 'Generic'),
-        ('google', 'Google'),
-        ('outlook', 'Outlook'),
-    ],
-                             'Type',
-                             readonly=False,
-                             required=True)
+            ('generic', 'Generic'),
+            ('google', 'Google'),
+            ('outlook', 'Outlook'),
+            ], 'Type', readonly=False, required=True)
     host = fields.Char('Server',
-                       states={
-                           'readonly': (Eval('state') != 'draft'),
-                           'required': True,
-                           'invisible': Bool(Eval('types') != 'generic'),
-                       },
-                       depends=['state'])
+        states={
+            'readonly': (Eval('state') != 'draft'),
+            'required': True,
+            'invisible': Bool(Eval('types') != 'generic'),
+            }, depends=['state'])
     ssl = fields.Boolean('SSL',
-                         states={
-                             'readonly': (Eval('state') != 'draft'),
-                             'invisible': Bool(Eval('types') != 'generic'),
-                         },
-                         depends=['state'])
+        states={
+            'readonly': (Eval('state') != 'draft'),
+            'invisible': Bool(Eval('types') != 'generic'),
+            }, depends=['state'])
     port = fields.Integer('Port',
-                          states={
-                              'readonly': (Eval('state') != 'draft'),
-                              'invisible': Bool(Eval('types') != 'generic'),
-                              'required': True,
-                          },
-                          depends=['state'])
-
-    folder = fields.Char(
-        'Folder',
-        required=True,
         states={
             'readonly': (Eval('state') != 'draft'),
-        },
+            'invisible': Bool(Eval('types') != 'generic'),
+            'required': True,
+            }, depends=['state'])
+    folder = fields.Char('Folder', required=True,
+        states={
+            'readonly': (Eval('state') != 'draft'),
+            },
         help='The folder name where to read from on the server.')
-    timeout = fields.Integer(
-        'Time Out',
-        required=True,
+    timeout = fields.Integer('Time Out', required=True,
         states={
             'readonly': (Eval('state') != 'draft'),
-        },
+            },
         help=('Time to wait until connection is established. '
-              'In seconds.'))
-    criterion = fields.Char('Criterion',
-                            required=False,
-                            states={
-                                'readonly': (Eval('state') != 'draft'),
-                                'invisible':
-                                Bool(Eval('search_mode') != 'custom'),
-                                'required':
-                                Bool(Eval('search_mode') == 'custom')
-                            },
-                            depends=['state', 'search_mode'])
-    criterion_used = fields.Function(fields.Char('Criterion used'),
-                                     'get_criterion_used')
-    email = fields.Char(
-        'Email',
+            'In seconds.'))
+    criterion = fields.Char('Criterion', required=False,
         states={
-            'readonly':
-            Bool(Eval('state') != 'draft' or Eval('types') != 'generic'),
-        },
-        depends=['state'],
+            'readonly': (Eval('state') != 'draft'),
+            'invisible': Bool(Eval('search_mode') != 'custom'),
+            'required': Bool(Eval('search_mode') == 'custom')
+            }, depends=['state', 'search_mode'])
+    criterion_used = fields.Function(fields.Char('Criterion used'),
+        'get_criterion_used')
+    email = fields.Char('Email',
+        states={
+            'readonly': (Bool(Eval('state') != 'draft'
+                or Eval('types') != 'generic')),
+            }, depends=['state'],
         help='Default From (if active this option) and Reply Email')
     user = fields.Char('Username',
-                       states={
-                           'readonly': (Eval('state') != 'draft'),
-                           'required': Bool(Eval('types') == 'generic'),
-                           'invisible': Bool(Eval('types') != 'generic'),
-                       },
-                       depends=['state'])
-    password = fields.Char('Password',
-                           strip=False,
-                           states={
-                               'readonly': (Eval('state') != 'draft'),
-                               'required': Bool(Eval('types') == 'generic'),
-                               'invisible': Bool(Eval('types') != 'generic'),
-                           },
-                           depends=['state'])
-    state = fields.Selection([
-        ('draft', 'Draft'),
-        ('done', 'Done'),
-    ],
-                             'State',
-                             readonly=True,
-                             required=True)
-    search_mode = fields.Selection(
-        [('unseen', 'Unseen'), ('interval', 'Time Interval'),
-         ('custom', 'Custom')],
-        'Search Mode',
         states={
             'readonly': (Eval('state') != 'draft'),
-        },
-        depends=['state', 'search_mode'],
+            'required': Bool(Eval('types') == 'generic'),
+            'invisible': Bool(Eval('types') != 'generic'),
+            }, depends=['state'])
+    password = fields.Char('Password',
+        strip=False,
+        states={
+            'readonly': (Eval('state') != 'draft'),
+            'required': Bool(Eval('types') == 'generic'),
+            'invisible': Bool(Eval('types') != 'generic'),
+        }, depends=['state'])
+    state = fields.Selection([
+            ('draft', 'Draft'),
+            ('done', 'Done'),
+            ], 'State', readonly=True, required=True)
+    search_mode = fields.Selection([
+            ('unseen', 'Unseen'),
+            ('interval', 'Time Interval'),
+            ('custom', 'Custom')
+            ], 'Search Mode',
+        states={
+            'readonly': (Eval('state') != 'draft'),
+            }, depends=['state', 'search_mode'],
         help='The criteria to filter when download messages. By '
         'default is only take the unread mesages, but it is possible '
         'to take a time interval or a custom selection')
-    last_retrieve_date = fields.Date(
-        'Last Retrieve Date',
+    last_retrieve_date = fields.Date('Last Retrieve Date',
         states={
             'invisible': Bool(Eval('search_mode') != 'interval'),
             'readonly': (Eval('state') != 'draft'),
-        },
-        depends=['state', 'search_mode'])
+            }, depends=['state', 'search_mode'])
     offset = fields.Integer('Days Offset',
-                            domain=[('offset', '>=', 1)],
-                            states={
-                                'invisible':
-                                Bool(Eval('search_mode') != 'interval'),
-                                'readonly': (Eval('state') != 'draft'),
-                            },
-                            depends=['state', 'search_mode'],
-                            required=True)
+        domain=[('offset', '>=', 1)],
+        states={
+            'invisible': Bool(Eval('search_mode') != 'interval'),
+            'readonly': (Eval('state') != 'draft'),
+            }, depends=['state', 'search_mode'], required=True)
     mark_seen = fields.Boolean('Mark as seen',
-                               help='Mark emails as seen on fetch.')
-    action_after_read = fields.Selection(
-        [
+        help='Mark emails as seen on fetch.')
+    action_after_read = fields.Selection([
             ('nothing', 'Nothing'),
             ('move', 'Move to a folder'),
             ('delete', 'Delete messages'),
-        ],
-        'Action after read',
+            ], 'Action after read',
         states={
             'readonly': (Eval('state') != 'draft'),
-        },
-        depends=['state'],
+            }, depends=['state'],
         help='The action to do after each email is readed.')
-    destination_folder = fields.Char(
-        'Move Folder',
+    destination_folder = fields.Char('Move Folder',
         states={
             'invisible': Bool(Eval('action_after_read') != 'move'),
             'required': Bool(Eval('action_after_read') == 'move'),
             'readonly': (Eval('state') != 'draft'),
-        },
-        depends=['state', 'action_after_read'],
+            }, depends=['state', 'action_after_read'],
         help='The folder name where to move to on the server.'
         ' Absolut path')
-
-    # Generic OAuth
-    token = fields.Char('Token',
-                        states={
-                            'invisible': Bool(Eval('types') == 'generic'),
-                        })
     session_id = fields.Char('Session ID',
-                             states={
-                                 'invisible': Bool(Eval('types') == 'generic'),
-                             })
-
-    # Google OAuth
-    token_refresh = fields.Char('Refresh Token',
-                                states={
-                                    'invisible':
-                                    Bool(Eval('types') != 'google'),
-                                })
+        states={
+            'invisible': Bool(Eval('types') == 'generic'),
+        })
+    oauth_credentials = fields.Dict('account.statement.origin.information',
+        "Oauth Credentials", readonly=True)
 
     @classmethod
     def __setup__(cls):
@@ -270,12 +224,12 @@ class IMAPServer(ModelSQL, ModelView):
 
     @fields.depends('types')
     def on_change_with_host(self):
-        if self.types == 'generic':
-            return ''
-        elif self.types == 'google':
+        if self.types == 'google':
             return 'imap.gmail.com'
+        elif self.types == 'outlook':
+            return 'imap.office365.com'
         else:
-            return 'imap.gmail.com'  # FIXME: Not valid, isn't for Microsoft
+            return ''
 
     @fields.depends('types', 'ssl')
     def on_change_with_ssl(self):
@@ -327,95 +281,128 @@ class IMAPServer(ModelSQL, ModelView):
             imapper = cls.connect(server)
             imapper.select()
             cls.logout(imapper)
-            raise UserError(
-                gettext('imap.connection_successful', account=server.rec_name))
+            raise UserError(gettext('imap.connection_successful',
+                    account=server.rec_name))
 
     # FIXME ConcurrencyException not handled
     @classmethod
     @ModelView.button
     def google(cls, servers):
         for server in servers:
-
-            if server.draft:
+            if (not GOOGLE_CLIENT_SECRETS or not GOOGLE_SCOPES
+                    or not GOOGLE_REDIRECT_URI
+                    or server.oauth_credentials is not None):
                 return
 
-            (access, state) = google_oauth.authorization_url(
-                access_type='offline', include_granted_scopes='true')
-            server.session_id = state
+            # Even the GOOGLE_CLIENT_SECRETS has all the information, the scope
+            # and redirect_uri are rquired.
+            flow = Flow.from_client_config(json.loads(GOOGLE_CLIENT_SECRETS),
+                scopes=GOOGLE_SCOPES, redirect_uri=GOOGLE_REDIRECT_URI)
 
+            authorization_url, state = flow.authorization_url(
+                # Enable offline access so that you can refresh an access token
+                # without re-prompting the user for permission. Recommended for
+                # web server apps.
+                access_type='offline',
+                include_granted_scopes='true')
+            server.session_id = state
             server.save()
 
             return {
                 'type': 'ir.action.url',
-                'url': f'{access}',
-            }
+                'url': f'{authorization_url}',
+                }
 
     @classmethod
     @ModelView.button
     def outlook(cls, servers):
         for server in servers:
-
             with open('ms_credentials.json', 'r') as f:
                 json.load(f)
-
-            base_url = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize'
+            base_url = OUTLOOK_URL
             #auth_url = f'{base_url}?client_id={credentials['CLIENT_ID']}&response_type=code&redirect_uri={credentials['REDIRECT_URI']}&response_mode=query&scope={credentials['SCOPE']}'
-
-            server.session_id = 'microsoft-auth'  # Temporal identifier FIXME Probable bug -> Si sale de la ventana de auth, que pasa?
+            server.session_id = 'microsoft-oauth'  # Temporal identifier FIXME Probable bug -> Si sale de la ventana de auth, que pasa?
             server.save()
-
             return {
                 'type': 'ir.action.url',
                 'url': f'{base_url}',
+                }
+
+    def google_refresh_token(self, credentials=None):
+        if not credentials and not self.oauth_credentials:
+            return
+        creds = (Credentials(**self.oauth_credentials)
+            if not credentials else credentials)
+        if not creds or not creds.refresh_token:
+            return
+        creds.refresh(Request())
+        # Even only change the token value, the other values are
+        # uncommon changed, it's possible that Google chate them,
+        # special the refresh_token. So save all again.
+        self.oauth_credentials = {
+            'token': creds.token,
+            'refresh_token': creds.refresh_token,
+            'token_uri': creds.token_uri,
+            'client_id': creds.client_id,
+            'client_secret': creds.client_secret,
+            'scopes': creds.scopes,
             }
+        self.save()
 
     @classmethod
-    def connect(cls,
-                server,
-                keyfile=None,
-                certfile=None,
-                debug=0,
-                identifier=None):
+    def connect(cls, server, ssl_context=None, debug=0):
+        imapper = cls.get_server(server.host, server.port, server.ssl,
+            ssl_context, debug, server.timeout)
+        user = None
+        password = None
+        auth = False
+        if server.types == 'google':
+            if server.oauth_credentials is None:
+                raise UserError(gettext('imap.msg_oauth_missing'))
+            else:
+                # Check if credentials has expired and refresh and refresh if it's
+                # necessary
+                creds = Credentials(**server.oauth_credentials)
+                # This is True if the credentials have a token and the token
+                # is not expired.
+                if not creds.valid:
+                    server.google_refresh_token(creds)
+                user = 'XOAUTH2'
+                password = 'user={}\x01auth=Bearer {}\x01\x01'.format(
+                    server.email, server.oauth_credentials['token'])
+                auth = True
+        elif server.types == 'outlook':
+            pass
+        else:
+            user =  server.user
+            password =  server.password
 
-        imapper = cls.get_server(server.host, server.port, server.ssl, keyfile,
-                                 certfile, debug, identifier, server.timeout)
-
-        if server.types == 'generic':
-            return cls.login(imapper, server.user, server.password)
-        elif server.types == 'google':
-            return cls.login(
-                imapper, 'XOAUTH2',
-                f'user={server.email}\1auth=Bearer {server.token}\1\1', True)
+        if user and password:
+            return cls.login(server, imapper, user, password, auth)
+        return
 
     @classmethod
-    def get_server(cls,
-                   host,
-                   port,
-                   ssl=False,
-                   keyfile=None,
-                   certfile=None,
-                   debug=0,
-                   identifier=None,
-                   timeout=120):
+    def get_server(cls, host, port, ssl=False, ssl_context=None, debug=0,
+            timeout=120):
         '''
         Obtain an IMAP opened connection
         '''
+        server = None
         try:
             if ssl:
-                return IMAP4_SSL(
-                    host=str(host),
-                    port=int(port),
-                    keyfile=keyfile,
-                    certfile=certfile,
-                    timeout=timeout)  # FIXME Puede que dé error con Google
+                server = IMAP4_SSL(host=str(host), port=int(port),
+                    ssl_context=ssl_context, timeout=timeout)
             else:
-                return IMAP4(host=str(host), port=int(port), timeout=timeout)
+                server = IMAP4(host=str(host), port=int(port), timeout=timeout)
+            server.debug = debug
 
         except (IMAP4.error, IMAP4.abort, IMAP4.readonly, socket.error) as e:
             raise UserError(gettext('imap.general_error', msg=e))
 
+        return server
+
     @classmethod
-    def login(cls, imapper, user, password, auth=False):
+    def login(cls, server, imapper, user, password, auth=False):
         '''
         Authenticates an imap connection
         '''
@@ -424,9 +411,27 @@ class IMAPServer(ModelSQL, ModelView):
                 status, data = imapper.login(user, password)
             else:
                 status, data = imapper.authenticate(user, lambda x: password)
-        except (IMAP4.error, IMAP4.abort, IMAP4.readonly, socket.error) as e:
-            status = 'NO'
-            data = e
+        except IMAP4.error as e:
+            status = 'KO'
+            data = str(e)
+            # For some reason the credentials return a True in 'valid' field,
+            # but it's not true.
+            if ('AUTHENTICATIONFAILED' in data
+                    and server.types == 'google'):
+                server.google_refresh_token()
+                user = 'XOAUTH2'
+                password = 'user={}\x01auth=Bearer {}\x01\x01'.format(
+                    server.email, server.oauth_credentials['token'])
+                try:
+                    status, data = imapper.authenticate(user,
+                        lambda x: password)
+                except (IMAP4.error, IMAP4.abort, IMAP4.readonly,
+                        socket.error) as e:
+                    status = 'KO'
+                    data = str(e)
+        except (IMAP4.abort, IMAP4.readonly, socket.error) as e:
+            status = 'KO'
+            data = str(e)
         if status != 'OK':
             cls.logout(imapper)
             raise UserError(gettext('imap.login_error', user=user, msg=data))
@@ -578,3 +583,8 @@ class IMAPServer(ModelSQL, ModelView):
             if emailids:
                 imapper.expunge()
         return status
+
+
+class OauthCredentials(DictSchemaMixin, ModelSQL, ModelView):
+    "Oauth Credentials"
+    __name__ = 'imap.server.oauth.credentials'

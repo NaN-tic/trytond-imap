@@ -43,5 +43,8 @@ Could not get id "%(email)s" messages.
 
 %(msg)s</field>
     </record>
+    <record model="ir.message" id="msg_oauth_missing">
+        <field name="text">The IMAP is set to use oauth authentication and the token is missing.</field>
+    </record>
     </data>
 </tryton>
