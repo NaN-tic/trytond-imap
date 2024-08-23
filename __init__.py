@@ -8,4 +8,7 @@ __all__ = ['register', 'routes']
 
 
 def register():
-    Pool.register(imap.IMAPServer, module='imap', type_='model')
+    Pool.register(
+        imap.IMAPServer,
+        imap.OauthCredentials,
+        module='imap', type_='model')
