@@ -16,11 +16,10 @@ from trytond.pyson import Bool, Eval
 from trytond.exceptions import UserError
 from trytond.i18n import gettext
 
-__all__ = ['IMAPServer']
-
 _IMAP_DATE_FORMAT = "%d-%b-%Y"
 
 logger = logging.getLogger(__name__)
+PRODUCTION_ENV = config.getboolean('database', 'production', default=False)
 
 # Define the client secret information
 GOOGLE_CLIENT_SECRETS = config.get('oauth', 'google')
@@ -154,7 +153,7 @@ class IMAPServer(ModelSQL, ModelView):
 
     @classmethod
     def __setup__(cls):
-        super(IMAPServer, cls).__setup__()
+        super().__setup__()
         cls._buttons.update({
             'test': {},
             'draft': {
@@ -288,6 +287,10 @@ class IMAPServer(ModelSQL, ModelView):
     @classmethod
     @ModelView.button
     def google(cls, servers):
+        if not PRODUCTION_ENV:
+            logger.warning('Production mode is not enabled.')
+            return
+
         for server in servers:
             if (not GOOGLE_CLIENT_SECRETS or not GOOGLE_SCOPES
                     or not GOOGLE_REDIRECT_URI
@@ -316,6 +319,10 @@ class IMAPServer(ModelSQL, ModelView):
     @classmethod
     @ModelView.button
     def outlook(cls, servers):
+        if not PRODUCTION_ENV:
+            logger.warning('Production mode is not enabled.')
+            return
+
         for server in servers:
             with open('ms_credentials.json', 'r') as f:
                 json.load(f)
@@ -351,6 +358,10 @@ class IMAPServer(ModelSQL, ModelView):
 
     @classmethod
     def connect(cls, server, ssl_context=None, debug=0):
+        if not PRODUCTION_ENV:
+            logger.warning('Production mode is not enabled.')
+            return
+
         imapper = cls.get_server(server.host, server.port, server.ssl,
             ssl_context, debug, server.timeout)
         user = None
