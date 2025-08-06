@@ -12,6 +12,7 @@ from google.auth.transport.requests import Request
 
 from trytond.model import ModelSQL, ModelView, fields, DictSchemaMixin
 from trytond.config import config
+from trytond.pool import Pool
 from trytond.pyson import Bool, Eval
 from trytond.exceptions import UserError
 from trytond.i18n import gettext
@@ -287,7 +288,7 @@ class IMAPServer(ModelSQL, ModelView):
     @classmethod
     @ModelView.button
     def google(cls, servers):
-        if not PRODUCTION_ENV:
+        if not PRODUCTION_ENV and not Pool().test:
             logger.warning('Production mode is not enabled.')
             return
 
@@ -319,7 +320,7 @@ class IMAPServer(ModelSQL, ModelView):
     @classmethod
     @ModelView.button
     def outlook(cls, servers):
-        if not PRODUCTION_ENV:
+        if not PRODUCTION_ENV and not Pool().test:
             logger.warning('Production mode is not enabled.')
             return
 
@@ -358,7 +359,7 @@ class IMAPServer(ModelSQL, ModelView):
 
     @classmethod
     def connect(cls, server, ssl_context=None, debug=0):
-        if not PRODUCTION_ENV:
+        if not PRODUCTION_ENV and not Pool().test:
             logger.warning('Production mode is not enabled.')
             return
 
