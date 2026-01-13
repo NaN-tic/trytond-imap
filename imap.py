@@ -277,8 +277,13 @@ class IMAPServer(ModelSQL, ModelView):
     @ModelView.button
     def test(cls, servers):
         "Checks IMAP credentials and confirms if connection works"
+        if not PRODUCTION_ENV:
+            return
+
         for server in servers:
             imapper = cls.connect(server)
+            if not imapper:
+                continue
             imapper.select()
             cls.logout(imapper)
             raise UserError(gettext('imap.connection_successful',
