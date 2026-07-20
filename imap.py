@@ -11,7 +11,7 @@ from google_auth_oauthlib.flow import Flow
 from google.auth.transport.requests import Request
 
 from trytond.model import ModelSQL, ModelView, fields, DictSchemaMixin
-from trytond.config import config
+import trytond.config as config
 from trytond.pool import Pool
 from trytond.pyson import Bool, Eval
 from trytond.exceptions import UserError
