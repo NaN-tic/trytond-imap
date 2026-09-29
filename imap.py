@@ -16,6 +16,7 @@ from trytond.pool import Pool
 from trytond.pyson import Bool, Eval
 from trytond.exceptions import UserError
 from trytond.i18n import gettext
+from trytond.transaction import without_check_access
 
 _IMAP_DATE_FORMAT = "%d-%b-%Y"
 
@@ -360,7 +361,8 @@ class IMAPServer(ModelSQL, ModelView):
             'client_secret': creds.client_secret,
             'scopes': creds.scopes,
             }
-        self.save()
+        with without_check_access():
+            self.save()
 
     @classmethod
     def connect(cls, server, ssl_context=None, debug=0):
@@ -489,7 +491,8 @@ class IMAPServer(ModelSQL, ModelView):
         try:
             status, data = imapper.search(None, self.criterion_used)
             self.last_retrieve_date = datetime.date.today()
-            self.save()
+            with without_check_access():
+                self.save()
         except (IMAP4.error, IMAP4.abort, IMAP4.readonly, socket.error) as e:
             status = 'NO'
             data = e
