@@ -32,7 +32,12 @@ def google(request, pool):
 
     flow = Flow.from_client_config(json.loads(GOOGLE_CLIENT_SECRETS),
         scopes=GOOGLE_SCOPES, state=state, redirect_uri=GOOGLE_REDIRECT_URI)
-    flow.fetch_token(authorization_response=request.url)
+    try:
+        flow.fetch_token(authorization_response=request.url,
+            timeout=imap.timeout)
+    except requests.exceptions.RequestException:
+        return Response('<h1>Google OAuth connection failed or timed out</h1>',
+            502, content_type='text/html')
     creds = flow.credentials
     imap.oauth_credentials = {
         'token': creds.token,

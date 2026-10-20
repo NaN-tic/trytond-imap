@@ -4,11 +4,13 @@ import datetime
 import json
 import logging
 import socket
+import time
 from imaplib import IMAP4, IMAP4_SSL
 
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
 from google.auth.transport.requests import Request
+from google.auth.exceptions import GoogleAuthError, TransportError
 
 from trytond.model import ModelSQL, ModelView, fields, DictSchemaMixin
 import trytond.config as config
@@ -35,6 +37,23 @@ GOOGLE_SCOPES = [scope.strip() for scope in GOOGLE_SCOPES]
 GOOGLE_REDIRECT_URI = config.get('oauth', 'google_redirect_uri')
 
 OUTLOOK_URL = config.get('oauth', 'outlook_uri')
+
+
+class BoundedGoogleRequest(Request):
+    """Bound token refresh requests, including Google's automatic retries."""
+
+    def __init__(self, timeout):
+        super().__init__()
+        self.deadline = time.monotonic() + timeout
+        self.attempts = 0
+
+    def __call__(self, *args, **kwargs):
+        remaining = self.deadline - time.monotonic()
+        if remaining <= 0 or self.attempts >= 3:
+            raise TransportError('Google OAuth request deadline exceeded.')
+        self.attempts += 1
+        kwargs['timeout'] = remaining
+        return super().__call__(*args, **kwargs)
 
 
 class IMAPServer(ModelSQL, ModelView):
@@ -69,10 +88,11 @@ class IMAPServer(ModelSQL, ModelView):
             },
         help='The folder name where to read from on the server.')
     timeout = fields.Integer('Time Out', required=True,
+        domain=[('timeout', '>', 0)],
         states={
             'readonly': (Eval('state') != 'draft'),
             },
-        help=('Time to wait until connection is established. '
+        help=('Maximum wait for IMAP network operations and Google token refresh. '
             'In seconds.'))
     criterion = fields.Char('Criterion', required=False,
         states={
@@ -285,8 +305,10 @@ class IMAPServer(ModelSQL, ModelView):
             imapper = cls.connect(server)
             if not imapper:
                 continue
-            imapper.select()
-            cls.logout(imapper)
+            try:
+                server.select_folder(imapper)
+            finally:
+                cls.logout(imapper)
             raise UserError(gettext('imap.connection_successful',
                     account=server.rec_name))
 
@@ -295,14 +317,12 @@ class IMAPServer(ModelSQL, ModelView):
     @ModelView.button
     def google(cls, servers):
         if not PRODUCTION_ENV and not Pool().test:
-            logger.warning('Production mode is not enabled.')
-            return
+            raise UserError(gettext('imap.msg_oauth_production'))
 
         for server in servers:
             if (not GOOGLE_CLIENT_SECRETS or not GOOGLE_SCOPES
-                    or not GOOGLE_REDIRECT_URI
-                    or server.oauth_credentials is not None):
-                return
+                    or not GOOGLE_REDIRECT_URI):
+                raise UserError(gettext('imap.msg_oauth_configuration'))
 
             # Even the GOOGLE_CLIENT_SECRETS has all the information, the scope
             # and redirect_uri are rquired.
@@ -314,6 +334,7 @@ class IMAPServer(ModelSQL, ModelView):
                 # without re-prompting the user for permission. Recommended for
                 # web server apps.
                 access_type='offline',
+                prompt='consent',
                 include_granted_scopes='true')
             server.session_id = state
             server.save()
@@ -349,7 +370,13 @@ class IMAPServer(ModelSQL, ModelView):
             if not credentials else credentials)
         if not creds or not creds.refresh_token:
             return
-        creds.refresh(Request())
+        request = BoundedGoogleRequest(self.timeout)
+        try:
+            creds.refresh(request)
+        except GoogleAuthError as exc:
+            raise UserError(gettext('imap.msg_oauth_refresh')) from exc
+        finally:
+            request.session.close()
         # Even only change the token value, the other values are
         # uncommon changed, it's possible that Google chate them,
         # special the refresh_token. So save all again.
@@ -370,8 +397,6 @@ class IMAPServer(ModelSQL, ModelView):
             logger.warning('Production mode is not enabled.')
             return
 
-        imapper = cls.get_server(server.host, server.port, server.ssl,
-            ssl_context, debug, server.timeout)
         user = None
         password = None
         auth = False
@@ -397,7 +422,16 @@ class IMAPServer(ModelSQL, ModelView):
             password =  server.password
 
         if user and password:
-            return cls.login(server, imapper, user, password, auth)
+            imapper = cls.get_server(server.host, server.port, server.ssl,
+                ssl_context, debug, server.timeout)
+            try:
+                return cls.login(server, imapper, user, password, auth)
+            except Exception:
+                try:
+                    imapper.shutdown()
+                except OSError:
+                    pass
+                raise
         return
 
     @classmethod
@@ -429,7 +463,8 @@ class IMAPServer(ModelSQL, ModelView):
             if not auth:
                 status, data = imapper.login(user, password)
             else:
-                status, data = imapper.authenticate(user, lambda x: password)
+                status, data = imapper.authenticate(user,
+                    lambda challenge: b'' if challenge else password)
         except IMAP4.error as e:
             status = 'KO'
             data = str(e)
@@ -443,7 +478,7 @@ class IMAPServer(ModelSQL, ModelView):
                     server.email, server.oauth_credentials['token'])
                 try:
                     status, data = imapper.authenticate(user,
-                        lambda x: password)
+                        lambda challenge: b'' if challenge else password)
                 except (IMAP4.error, IMAP4.abort, IMAP4.readonly,
                         socket.error) as e:
                     status = 'KO'
@@ -459,10 +494,12 @@ class IMAPServer(ModelSQL, ModelView):
     @classmethod
     def logout(cls, imapper):
         try:
-            imapper.close()  # which also expunges the mailbox
             imapper.logout()
-        except:
-            pass
+        except (IMAP4.error, OSError):
+            try:
+                imapper.shutdown()
+            except OSError:
+                pass
 
     def select_folder(self, imapper):
         '''

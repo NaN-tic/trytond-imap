@@ -46,5 +46,14 @@ Could not get id "%(email)s" messages.
     <record model="ir.message" id="msg_oauth_missing">
         <field name="text">The IMAP is set to use oauth authentication and the token is missing.</field>
     </record>
+    <record model="ir.message" id="msg_oauth_production">
+        <field name="text">Enable database production mode to authorize Google OAuth.</field>
+    </record>
+    <record model="ir.message" id="msg_oauth_configuration">
+        <field name="text">Configure google, google_scopes and google_redirect_uri in the oauth section before authorizing Google OAuth.</field>
+    </record>
+    <record model="ir.message" id="msg_oauth_refresh">
+        <field name="text">Google OAuth token refresh failed or timed out. Check the connection and authorize the account again using Google OAuth.</field>
+    </record>
     </data>
 </tryton>
