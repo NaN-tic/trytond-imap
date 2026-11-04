@@ -75,6 +75,10 @@ msgctxt "field:imap.server,ssl:"
 msgid "SSL"
 msgstr "SSL"
 
+msgctxt "field:imap.server,starttls:"
+msgid "STARTTLS"
+msgstr "STARTTLS"
+
 msgctxt "field:imap.server,state:"
 msgid "State"
 msgstr "状态"
@@ -90,6 +94,10 @@ msgstr "科目"
 msgctxt "field:imap.server,user:"
 msgid "Username"
 msgstr "用户名"
+
+msgctxt "field:imap.server,verify_certificate:"
+msgid "Verify TLS Certificate"
+msgstr "验证 TLS 证书"
 
 msgctxt "help:imap.server,action_after_read:"
 msgid "The action to do after each email is readed."
@@ -121,6 +129,10 @@ msgstr "下载邮件时的筛选条件。默认仅获取未读邮件，也可使
 msgctxt "help:imap.server,timeout:"
 msgid "Time to wait until connection is established. In seconds."
 msgstr "等待连接建立的时间，以秒为单位。"
+
+msgctxt "help:imap.server,verify_certificate:"
+msgid "Disabling verification keeps encryption but does not verify the identity of the mail server."
+msgstr "禁用验证仍会保持加密，但不会验证邮件服务器的身份。"
 
 msgctxt "model:imap.server,name:"
 msgid "IMAP Server"
@@ -183,6 +195,10 @@ msgstr ""
 msgctxt "model:ir.message,text:msg_oauth_missing"
 msgid "The IMAP is set to use oauth authentication and the token is missing."
 msgstr "IMAP 已设置为使用 OAuth 身份验证，但缺少令牌。"
+
+msgctxt "model:ir.message,text:msg_ssl_starttls"
+msgid "SSL and STARTTLS cannot be enabled at the same time."
+msgstr "不能同时启用 SSL 和 STARTTLS。"
 
 #, python-format
 msgctxt "model:ir.message,text:search_error"
