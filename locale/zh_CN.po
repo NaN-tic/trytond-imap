@@ -1,0 +1,314 @@
+#
+msgid ""
+msgstr ""
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgctxt "field:imap.server,action_after_read:"
+msgid "Action after read"
+msgstr "读取后操作"
+
+msgctxt "field:imap.server,criterion:"
+msgid "Criterion"
+msgstr "条件"
+
+msgctxt "field:imap.server,criterion_used:"
+msgid "Criterion used"
+msgstr "使用的条件"
+
+msgctxt "field:imap.server,destination_folder:"
+msgid "Move Folder"
+msgstr "移至文件夹"
+
+msgctxt "field:imap.server,email:"
+msgid "Email"
+msgstr "电子邮件"
+
+msgctxt "field:imap.server,folder:"
+msgid "Folder"
+msgstr "文件夹"
+
+msgctxt "field:imap.server,host:"
+msgid "Server"
+msgstr "服务器"
+
+msgctxt "field:imap.server,last_retrieve_date:"
+msgid "Last Retrieve Date"
+msgstr "最近获取日期"
+
+msgctxt "field:imap.server,mark_seen:"
+msgid "Mark as seen"
+msgstr "标记为已读"
+
+msgctxt "field:imap.server,name:"
+msgid "Name"
+msgstr "名称"
+
+msgctxt "field:imap.server,oauth_credentials:"
+msgid "Oauth Credentials"
+msgstr "OAuth 凭据"
+
+msgctxt "field:imap.server,offset:"
+msgid "Days Offset"
+msgstr "天数偏移"
+
+msgctxt "field:imap.server,password:"
+msgid "Password"
+msgstr "密码"
+
+msgctxt "field:imap.server,port:"
+msgid "Port"
+msgstr "端口"
+
+msgctxt "field:imap.server,search_mode:"
+msgid "Search Mode"
+msgstr "搜索模式"
+
+msgctxt "field:imap.server,session_id:"
+msgid "Session ID"
+msgstr "会话 ID"
+
+msgctxt "field:imap.server,ssl:"
+msgid "SSL"
+msgstr "SSL"
+
+msgctxt "field:imap.server,state:"
+msgid "State"
+msgstr "状态"
+
+msgctxt "field:imap.server,timeout:"
+msgid "Time Out"
+msgstr "超时"
+
+msgctxt "field:imap.server,types:"
+msgid "Type"
+msgstr "科目"
+
+msgctxt "field:imap.server,user:"
+msgid "Username"
+msgstr "用户名"
+
+msgctxt "help:imap.server,action_after_read:"
+msgid "The action to do after each email is readed."
+msgstr "读取每封邮件后执行的操作。"
+
+msgctxt "help:imap.server,destination_folder:"
+msgid "The folder name where to move to on the server. Absolut path"
+msgstr "服务器上目标文件夹的名称，使用绝对路径。"
+
+msgctxt "help:imap.server,email:"
+msgid "Default From (if active this option) and Reply Email"
+msgstr "默认发件地址（启用此选项时）和回复地址"
+
+msgctxt "help:imap.server,folder:"
+msgid "The folder name where to read from on the server."
+msgstr "服务器上读取邮件的文件夹名称。"
+
+msgctxt "help:imap.server,mark_seen:"
+msgid "Mark emails as seen on fetch."
+msgstr "获取邮件时将其标记为已读。"
+
+msgctxt "help:imap.server,search_mode:"
+msgid ""
+"The criteria to filter when download messages. By default is only take the "
+"unread mesages, but it is possible to take a time interval or a custom "
+"selection"
+msgstr "下载邮件时的筛选条件。默认仅获取未读邮件，也可使用时间范围或自定义选择条件。"
+
+msgctxt "help:imap.server,timeout:"
+msgid "Time to wait until connection is established. In seconds."
+msgstr "等待连接建立的时间，以秒为单位。"
+
+msgctxt "model:imap.server,name:"
+msgid "IMAP Server"
+msgstr "IMAP 服务器"
+
+msgctxt "model:imap.server.oauth.credentials,name:"
+msgid "Oauth Credentials"
+msgstr "OAuth 凭据"
+
+msgctxt "model:ir.action,name:act_imap_server"
+msgid "IMAP Server"
+msgstr "IMAP 服务器"
+
+msgctxt "model:ir.message,text:connection_error"
+msgid "IMAP connection test failed."
+msgstr "IMAP 连接测试失败。"
+
+#, python-format
+msgctxt "model:ir.message,text:connection_successful"
+msgid "Successful IMAP test connection using account \"%(account)s\"."
+msgstr "使用账户“%(account)s”的 IMAP 连接测试成功。"
+
+#, python-format
+msgctxt "model:ir.message,text:fetch_error"
+msgid ""
+"Error IMAP Server:\n"
+"Could not get id \"%(email)s\" messages.\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"IMAP 服务器错误：\n"
+"无法获取 ID 为“%(email)s”的邮件。\n"
+"\n"
+"%(msg)s"
+
+#, python-format
+msgctxt "model:ir.message,text:general_error"
+msgid ""
+"Error IMAP Server:\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"IMAP 服务器错误：\n"
+"\n"
+"%(msg)s"
+
+#, python-format
+msgctxt "model:ir.message,text:login_error"
+msgid ""
+"Error IMAP Server:\n"
+"Login with user \"%(user)s\" failed.\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"IMAP 服务器错误：\n"
+"用户“%(user)s”登录失败。\n"
+"\n"
+"%(msg)s"
+
+msgctxt "model:ir.message,text:msg_oauth_missing"
+msgid "The IMAP is set to use oauth authentication and the token is missing."
+msgstr "IMAP 已设置为使用 OAuth 身份验证，但缺少令牌。"
+
+#, python-format
+msgctxt "model:ir.message,text:search_error"
+msgid ""
+"Error IMAP Server:\n"
+"Could not search \"%(criteria)s\" messages.\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"IMAP 服务器错误：\n"
+"无法搜索符合“%(criteria)s”的邮件。\n"
+"\n"
+"%(msg)s"
+
+#, python-format
+msgctxt "model:ir.message,text:select_error"
+msgid ""
+"Error IMAP Server:\n"
+"Could not select \"%(folder)s\" mailbox.\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"IMAP 服务器错误：\n"
+"无法选择邮箱“%(folder)s”。\n"
+"\n"
+"%(msg)s"
+
+#, python-format
+msgctxt "model:ir.message,text:test_details"
+msgid ""
+"IMAP test connection Details:\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"IMAP 连接测试详情：\n"
+"\n"
+"%(msg)s"
+
+msgctxt "model:ir.model.button,string:imap_done_button"
+msgid "Done"
+msgstr "完成"
+
+msgctxt "model:ir.model.button,string:imap_draft_button"
+msgid "Draft"
+msgstr "草案"
+
+msgctxt "model:ir.model.button,string:imap_get_mails_button"
+msgid "Get Mails"
+msgstr "获取邮件"
+
+msgctxt "model:ir.model.button,string:imap_google_oauth"
+msgid "Google OAuth"
+msgstr "Google OAuth"
+
+msgctxt "model:ir.model.button,string:imap_outlook_oauth"
+msgid "Outlook OAuth"
+msgstr "Outlook OAuth"
+
+msgctxt "model:ir.model.button,string:imap_test_button"
+msgid "Test"
+msgstr "测试"
+
+msgctxt "model:ir.ui.menu,name:menu_imap"
+msgid "IMAP"
+msgstr "IMAP"
+
+msgctxt "model:ir.ui.menu,name:menu_imap_server"
+msgid "IMAP Server"
+msgstr "IMAP 服务器"
+
+msgctxt "model:res.group,name:group_imap"
+msgid "IMAP"
+msgstr "IMAP"
+
+msgctxt "model:res.group,name:group_imap_admin"
+msgid "IMAP Administration"
+msgstr "IMAP 管理"
+
+msgctxt "selection:imap.server,action_after_read:"
+msgid "Delete messages"
+msgstr "删除邮件"
+
+msgctxt "selection:imap.server,action_after_read:"
+msgid "Move to a folder"
+msgstr "移至文件夹"
+
+msgctxt "selection:imap.server,action_after_read:"
+msgid "Nothing"
+msgstr "无操作"
+
+msgctxt "selection:imap.server,search_mode:"
+msgid "Custom"
+msgstr "自定义"
+
+msgctxt "selection:imap.server,search_mode:"
+msgid "Time Interval"
+msgstr "时间范围"
+
+msgctxt "selection:imap.server,search_mode:"
+msgid "Unseen"
+msgstr "未读"
+
+msgctxt "selection:imap.server,state:"
+msgid "Done"
+msgstr "完成"
+
+msgctxt "selection:imap.server,state:"
+msgid "Draft"
+msgstr "草案"
+
+msgctxt "selection:imap.server,types:"
+msgid "Generic"
+msgstr "通用"
+
+msgctxt "selection:imap.server,types:"
+msgid "Google"
+msgstr "Google"
+
+msgctxt "selection:imap.server,types:"
+msgid "Outlook"
+msgstr "Outlook"
+
+msgctxt "view:imap.server:"
+msgid "Login Information"
+msgstr "登录信息"
+
+msgctxt "view:imap.server:"
+msgid "Server Information"
+msgstr "服务器信息"
