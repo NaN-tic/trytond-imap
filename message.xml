@@ -55,5 +55,8 @@ Could not get id "%(email)s" messages.
     <record model="ir.message" id="msg_oauth_refresh">
         <field name="text">Google OAuth token refresh failed or timed out. Check the connection and authorize the account again using Google OAuth.</field>
     </record>
+    <record model="ir.message" id="msg_ssl_starttls">
+        <field name="text">SSL and STARTTLS cannot be enabled at the same time.</field>
+    </record>
     </data>
 </tryton>

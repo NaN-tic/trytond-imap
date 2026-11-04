@@ -2,6 +2,22 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=utf-8\n"
 
+msgctxt "field:imap.server,verify_certificate:"
+msgid "Verify TLS Certificate"
+msgstr "Verifica el certificat TLS"
+
+msgctxt "help:imap.server,verify_certificate:"
+msgid "Disabling verification keeps encryption but does not verify the identity of the mail server."
+msgstr "Desactivar la verificació manté el xifratge, però no verifica la identitat del servidor de correu."
+
+msgctxt "field:imap.server,starttls:"
+msgid "STARTTLS"
+msgstr "STARTTLS"
+
+msgctxt "model:ir.message,text:msg_ssl_starttls"
+msgid "SSL and STARTTLS cannot be enabled at the same time."
+msgstr "No es poden activar SSL i STARTTLS alhora."
+
 msgctxt "field:imap.server,action_after_read:"
 msgid "Action after read"
 msgstr "Acció després de llegir"

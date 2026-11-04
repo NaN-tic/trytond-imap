@@ -11,6 +11,11 @@
     <field name="host"/>
     <label name="ssl"/>
     <field name="ssl"/>
+    <label name="starttls"/>
+    <field name="starttls"/>
+    <label name="verify_certificate"/>
+    <field name="verify_certificate"/>
+    <newline/>
     <label name="port"/>
     <field name="port"/>
     <label name="folder"/>

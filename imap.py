@@ -5,7 +5,9 @@ import json
 import logging
 import socket
 import time
+from contextlib import suppress
 from imaplib import IMAP4, IMAP4_SSL
+from ssl import CERT_NONE, create_default_context
 
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
@@ -13,6 +15,7 @@ from google.auth.transport.requests import Request
 from google.auth.exceptions import GoogleAuthError, TransportError
 
 from trytond.model import ModelSQL, ModelView, fields, DictSchemaMixin
+from trytond.model.modelstorage import ValidationError
 import trytond.config as config
 from trytond.pool import Pool
 from trytond.pyson import Bool, Eval
@@ -76,6 +79,19 @@ class IMAPServer(ModelSQL, ModelView):
             'readonly': (Eval('state') != 'draft'),
             'invisible': Bool(Eval('types') != 'generic'),
             }, depends=['state'])
+    starttls = fields.Boolean('STARTTLS',
+        states={
+            'readonly': (Eval('state') != 'draft'),
+            'invisible': Bool(Eval('types') != 'generic'),
+            }, depends=['state'])
+    verify_certificate = fields.Boolean('Verify TLS Certificate',
+        states={
+            'readonly': (Eval('state') != 'draft'),
+            'invisible': (Bool(Eval('types') != 'generic')
+                | ~(Eval('ssl') | Eval('starttls'))),
+            }, depends=['state'],
+        help='Disabling verification keeps encryption but does not verify '
+            'the identity of the mail server.')
     port = fields.Integer('Port',
         states={
             'readonly': (Eval('state') != 'draft'),
@@ -223,6 +239,21 @@ class IMAPServer(ModelSQL, ModelView):
     @staticmethod
     def default_ssl():
         return True
+
+    @staticmethod
+    def default_starttls():
+        return False
+
+    @staticmethod
+    def default_verify_certificate():
+        return True
+
+    @classmethod
+    def validate(cls, servers):
+        super().validate(servers)
+        for server in servers:
+            if server.ssl and server.starttls:
+                raise ValidationError(gettext('imap.msg_ssl_starttls'))
 
     @staticmethod
     def default_state():
@@ -422,8 +453,21 @@ class IMAPServer(ModelSQL, ModelView):
             password =  server.password
 
         if user and password:
+            if ssl_context is None and (server.ssl or server.starttls):
+                ssl_context = create_default_context()
+                if not server.verify_certificate:
+                    ssl_context.check_hostname = False
+                    ssl_context.verify_mode = CERT_NONE
             imapper = cls.get_server(server.host, server.port, server.ssl,
                 ssl_context, debug, server.timeout)
+            if server.starttls:
+                try:
+                    imapper.starttls(ssl_context=ssl_context)
+                except (IMAP4.error, OSError) as error:
+                    with suppress(OSError):
+                        imapper.shutdown()
+                    raise UserError(gettext(
+                            'imap.general_error', msg=error)) from error
             try:
                 return cls.login(server, imapper, user, password, auth)
             except Exception:
