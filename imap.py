@@ -67,7 +67,10 @@ class IMAPServer(ModelSQL, ModelView):
             ('generic', 'Generic'),
             ('google', 'Google'),
             ('outlook', 'Outlook'),
-            ], 'Type', readonly=False, required=True)
+            ], 'Type', required=True,
+        states={
+            'readonly': Eval('state') != 'draft',
+            }, depends=['state'])
     host = fields.Char('Server',
         states={
             'readonly': (Eval('state') != 'draft'),
