@@ -1,0 +1,337 @@
+#
+msgid ""
+msgstr ""
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgctxt "field:imap.server,action_after_read:"
+msgid "Action after read"
+msgstr "Olvasás utáni művelet"
+
+msgctxt "field:imap.server,criterion:"
+msgid "Criterion"
+msgstr "Feltétel"
+
+msgctxt "field:imap.server,criterion_used:"
+msgid "Criterion used"
+msgstr "Használt feltétel"
+
+msgctxt "field:imap.server,destination_folder:"
+msgid "Move Folder"
+msgstr "Áthelyezés célmappája"
+
+msgctxt "field:imap.server,email:"
+msgid "Email"
+msgstr "E-mail"
+
+msgctxt "field:imap.server,folder:"
+msgid "Folder"
+msgstr "Mappa"
+
+msgctxt "field:imap.server,host:"
+msgid "Server"
+msgstr "Kiszolgáló"
+
+msgctxt "field:imap.server,last_retrieve_date:"
+msgid "Last Retrieve Date"
+msgstr "Utolsó lekérés dátuma"
+
+msgctxt "field:imap.server,mark_seen:"
+msgid "Mark as seen"
+msgstr "Megjelölés olvasottként"
+
+msgctxt "field:imap.server,name:"
+msgid "Name"
+msgstr "Név"
+
+msgctxt "field:imap.server,oauth_credentials:"
+msgid "Oauth Credentials"
+msgstr "OAuth-hitelesítő adatok"
+
+msgctxt "field:imap.server,offset:"
+msgid "Days Offset"
+msgstr "Napeltolás"
+
+msgctxt "field:imap.server,password:"
+msgid "Password"
+msgstr "Jelszó"
+
+msgctxt "field:imap.server,port:"
+msgid "Port"
+msgstr "Port"
+
+msgctxt "field:imap.server,search_mode:"
+msgid "Search Mode"
+msgstr "Keresési mód"
+
+msgctxt "field:imap.server,session_id:"
+msgid "Session ID"
+msgstr "Munkamenet-azonosító"
+
+msgctxt "field:imap.server,ssl:"
+msgid "SSL"
+msgstr "SSL"
+
+msgctxt "field:imap.server,starttls:"
+msgid "STARTTLS"
+msgstr "STARTTLS"
+
+msgctxt "field:imap.server,state:"
+msgid "State"
+msgstr "Állapot"
+
+msgctxt "field:imap.server,timeout:"
+msgid "Time Out"
+msgstr "Időtúllépés"
+
+msgctxt "field:imap.server,types:"
+msgid "Type"
+msgstr "Típus"
+
+msgctxt "field:imap.server,user:"
+msgid "Username"
+msgstr "Felhasználónév"
+
+msgctxt "field:imap.server,verify_certificate:"
+msgid "Verify TLS Certificate"
+msgstr "TLS-tanúsítvány ellenőrzése"
+
+msgctxt "help:imap.server,action_after_read:"
+msgid "The action to do after each email is readed."
+msgstr "Az egyes e-mailek elolvasása után végrehajtandó művelet."
+
+msgctxt "help:imap.server,destination_folder:"
+msgid "The folder name where to move to on the server. Absolut path"
+msgstr "A kiszolgálón található célmappa neve, abszolút elérési úttal."
+
+msgctxt "help:imap.server,email:"
+msgid "Default From (if active this option) and Reply Email"
+msgstr "Alapértelmezett feladó (ha az opció aktív) és válaszcím"
+
+msgctxt "help:imap.server,folder:"
+msgid "The folder name where to read from on the server."
+msgstr "A kiszolgálón található olvasandó mappa neve."
+
+msgctxt "help:imap.server,mark_seen:"
+msgid "Mark emails as seen on fetch."
+msgstr "E-mailek megjelölése olvasottként lekéréskor."
+
+msgctxt "help:imap.server,search_mode:"
+msgid ""
+"The criteria to filter when download messages. By default is only take the "
+"unread mesages, but it is possible to take a time interval or a custom "
+"selection"
+msgstr ""
+"Az üzenetek letöltésekor használt szűrési feltétel. Alapértelmezés szerint "
+"csak az olvasatlan üzeneteket tölti le, de időszak vagy egyéni feltétel is "
+"megadható."
+
+msgctxt "help:imap.server,timeout:"
+msgid "Time to wait until connection is established. In seconds."
+msgstr "A kapcsolat létrejöttére való várakozás ideje másodpercben."
+
+msgctxt "help:imap.server,verify_certificate:"
+msgid ""
+"Disabling verification keeps encryption but does not verify the identity of "
+"the mail server."
+msgstr ""
+"Az ellenőrzés kikapcsolása megtartja a titkosítást, de nem ellenőrzi a "
+"levelezőkiszolgáló személyazonosságát."
+
+msgctxt "model:imap.server,name:"
+msgid "IMAP Server"
+msgstr "IMAP-kiszolgáló"
+
+msgctxt "model:imap.server.oauth.credentials,name:"
+msgid "Oauth Credentials"
+msgstr "OAuth-hitelesítő adatok"
+
+msgctxt "model:ir.action,name:act_imap_server"
+msgid "IMAP Server"
+msgstr "IMAP-kiszolgáló"
+
+msgctxt "model:ir.message,text:connection_error"
+msgid "IMAP connection test failed."
+msgstr "Az IMAP-kapcsolat tesztje sikertelen."
+
+#, python-format
+msgctxt "model:ir.message,text:connection_successful"
+msgid "Successful IMAP test connection using account \"%(account)s\"."
+msgstr "Sikeres IMAP-kapcsolatteszt a(z) „%(account)s” fiókkal."
+
+#, python-format
+msgctxt "model:ir.message,text:fetch_error"
+msgid ""
+"Error IMAP Server:\n"
+"Could not get id \"%(email)s\" messages.\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"IMAP-kiszolgálóhiba:\n"
+"Nem sikerült lekérni a(z) „%(email)s” azonosítójú üzeneteket.\n"
+"\n"
+"%(msg)s"
+
+#, python-format
+msgctxt "model:ir.message,text:general_error"
+msgid ""
+"Error IMAP Server:\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"IMAP-kiszolgálóhiba:\n"
+"\n"
+"%(msg)s"
+
+#, python-format
+msgctxt "model:ir.message,text:login_error"
+msgid ""
+"Error IMAP Server:\n"
+"Login with user \"%(user)s\" failed.\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"IMAP-kiszolgálóhiba:\n"
+"A(z) „%(user)s” felhasználó bejelentkezése sikertelen.\n"
+"\n"
+"%(msg)s"
+
+msgctxt "model:ir.message,text:msg_oauth_missing"
+msgid "The IMAP is set to use oauth authentication and the token is missing."
+msgstr "Az IMAP OAuth-hitelesítésre van beállítva, de hiányzik a token."
+
+msgctxt "model:ir.message,text:msg_ssl_starttls"
+msgid "SSL and STARTTLS cannot be enabled at the same time."
+msgstr "Az SSL és a STARTTLS nem engedélyezhető egyszerre."
+
+#, python-format
+msgctxt "model:ir.message,text:search_error"
+msgid ""
+"Error IMAP Server:\n"
+"Could not search \"%(criteria)s\" messages.\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"IMAP-kiszolgálóhiba:\n"
+"Nem sikerült a(z) „%(criteria)s” feltételnek megfelelő üzeneteket keresni.\n"
+"\n"
+"%(msg)s"
+
+#, python-format
+msgctxt "model:ir.message,text:select_error"
+msgid ""
+"Error IMAP Server:\n"
+"Could not select \"%(folder)s\" mailbox.\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"IMAP-kiszolgálóhiba:\n"
+"Nem sikerült kiválasztani a(z) „%(folder)s” postafiókot.\n"
+"\n"
+"%(msg)s"
+
+#, python-format
+msgctxt "model:ir.message,text:test_details"
+msgid ""
+"IMAP test connection Details:\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"Az IMAP-kapcsolatteszt részletei:\n"
+"\n"
+"%(msg)s"
+
+msgctxt "model:ir.model.button,string:imap_done_button"
+msgid "Done"
+msgstr "Kész"
+
+msgctxt "model:ir.model.button,string:imap_draft_button"
+msgid "Draft"
+msgstr "vázlat"
+
+msgctxt "model:ir.model.button,string:imap_get_mails_button"
+msgid "Get Mails"
+msgstr "Levelek lekérése"
+
+msgctxt "model:ir.model.button,string:imap_google_oauth"
+msgid "Google OAuth"
+msgstr "Google OAuth"
+
+msgctxt "model:ir.model.button,string:imap_outlook_oauth"
+msgid "Outlook OAuth"
+msgstr "Outlook OAuth"
+
+msgctxt "model:ir.model.button,string:imap_test_button"
+msgid "Test"
+msgstr "Teszt"
+
+msgctxt "model:ir.ui.menu,name:menu_imap"
+msgid "IMAP"
+msgstr "IMAP"
+
+msgctxt "model:ir.ui.menu,name:menu_imap_server"
+msgid "IMAP Server"
+msgstr "IMAP-kiszolgáló"
+
+msgctxt "model:res.group,name:group_imap"
+msgid "IMAP"
+msgstr "IMAP"
+
+msgctxt "model:res.group,name:group_imap_admin"
+msgid "IMAP Administration"
+msgstr "IMAP-kezelés"
+
+msgctxt "selection:imap.server,action_after_read:"
+msgid "Delete messages"
+msgstr "Üzenetek törlése"
+
+msgctxt "selection:imap.server,action_after_read:"
+msgid "Move to a folder"
+msgstr "Áthelyezés mappába"
+
+msgctxt "selection:imap.server,action_after_read:"
+msgid "Nothing"
+msgstr "Semmi"
+
+msgctxt "selection:imap.server,search_mode:"
+msgid "Custom"
+msgstr "Egyéni"
+
+msgctxt "selection:imap.server,search_mode:"
+msgid "Time Interval"
+msgstr "Időintervallum"
+
+msgctxt "selection:imap.server,search_mode:"
+msgid "Unseen"
+msgstr "Olvasatlan"
+
+msgctxt "selection:imap.server,state:"
+msgid "Done"
+msgstr "Kész"
+
+msgctxt "selection:imap.server,state:"
+msgid "Draft"
+msgstr "vázlat"
+
+msgctxt "selection:imap.server,types:"
+msgid "Generic"
+msgstr "Általános"
+
+msgctxt "selection:imap.server,types:"
+msgid "Google"
+msgstr "Google"
+
+msgctxt "selection:imap.server,types:"
+msgid "Outlook"
+msgstr "Outlook"
+
+msgctxt "view:imap.server:"
+msgid "Login Information"
+msgstr "Bejelentkezési adatok"
+
+msgctxt "view:imap.server:"
+msgid "Server Information"
+msgstr "Kiszolgáló adatai"
