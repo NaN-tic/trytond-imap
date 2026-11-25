@@ -1,0 +1,337 @@
+#
+msgid ""
+msgstr ""
+"Language: km\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgctxt "field:imap.server,action_after_read:"
+msgid "Action after read"
+msgstr "សកម្មភាពក្រោយពេលអាន"
+
+msgctxt "field:imap.server,criterion:"
+msgid "Criterion"
+msgstr "លក្ខណៈវិនិច្ឆ័យ"
+
+msgctxt "field:imap.server,criterion_used:"
+msgid "Criterion used"
+msgstr "លក្ខណៈវិនិច្ឆ័យដែលបានប្រើ"
+
+msgctxt "field:imap.server,destination_folder:"
+msgid "Move Folder"
+msgstr "ថតគោលដៅ"
+
+msgctxt "field:imap.server,email:"
+msgid "Email"
+msgstr "អ៊ីមែល"
+
+msgctxt "field:imap.server,folder:"
+msgid "Folder"
+msgstr "ថត"
+
+msgctxt "field:imap.server,host:"
+msgid "Server"
+msgstr "ម៉ាស៊ីនមេ"
+
+msgctxt "field:imap.server,last_retrieve_date:"
+msgid "Last Retrieve Date"
+msgstr "កាលបរិច្ឆេទទាញយកចុងក្រោយ"
+
+msgctxt "field:imap.server,mark_seen:"
+msgid "Mark as seen"
+msgstr "សម្គាល់ថាបានឃើញ"
+
+msgctxt "field:imap.server,name:"
+msgid "Name"
+msgstr "ឈ្មោះ"
+
+msgctxt "field:imap.server,oauth_credentials:"
+msgid "Oauth Credentials"
+msgstr "ព័ត៌មានបញ្ជាក់អត្តសញ្ញាណ OAuth"
+
+msgctxt "field:imap.server,offset:"
+msgid "Days Offset"
+msgstr "ចំនួនថ្ងៃរំកិល"
+
+msgctxt "field:imap.server,password:"
+msgid "Password"
+msgstr "ពាក្យសម្ងាត់"
+
+msgctxt "field:imap.server,port:"
+msgid "Port"
+msgstr "ច្រក"
+
+msgctxt "field:imap.server,search_mode:"
+msgid "Search Mode"
+msgstr "របៀបស្វែងរក"
+
+msgctxt "field:imap.server,session_id:"
+msgid "Session ID"
+msgstr "លេខសម្គាល់សម័យប្រើប្រាស់"
+
+msgctxt "field:imap.server,ssl:"
+msgid "SSL"
+msgstr "SSL"
+
+msgctxt "field:imap.server,starttls:"
+msgid "STARTTLS"
+msgstr "STARTTLS"
+
+msgctxt "field:imap.server,state:"
+msgid "State"
+msgstr "ស្ថានភាព"
+
+msgctxt "field:imap.server,timeout:"
+msgid "Time Out"
+msgstr "ពេលរង់ចាំអតិបរមា"
+
+msgctxt "field:imap.server,types:"
+msgid "Type"
+msgstr "ប្រភេទ"
+
+msgctxt "field:imap.server,user:"
+msgid "Username"
+msgstr "ឈ្មោះអ្នកប្រើប្រាស់"
+
+msgctxt "field:imap.server,verify_certificate:"
+msgid "Verify TLS Certificate"
+msgstr "ផ្ទៀងផ្ទាត់វិញ្ញាបនបត្រ TLS"
+
+msgctxt "help:imap.server,action_after_read:"
+msgid "The action to do after each email is readed."
+msgstr "សកម្មភាពដែលត្រូវធ្វើបន្ទាប់ពីអានអ៊ីមែលនីមួយៗ។"
+
+msgctxt "help:imap.server,destination_folder:"
+msgid "The folder name where to move to on the server. Absolut path"
+msgstr "ឈ្មោះថតគោលដៅនៅលើម៉ាស៊ីនមេ។ ប្រើផ្លូវពេញ។"
+
+msgctxt "help:imap.server,email:"
+msgid "Default From (if active this option) and Reply Email"
+msgstr "អាសយដ្ឋានអ្នកផ្ញើលំនាំដើម (បើបើកជម្រើសនេះ) និងអាសយដ្ឋានសម្រាប់ឆ្លើយតប"
+
+msgctxt "help:imap.server,folder:"
+msgid "The folder name where to read from on the server."
+msgstr "ឈ្មោះថតនៅលើម៉ាស៊ីនមេ ដែលត្រូវអានសារពីថតនោះ។"
+
+msgctxt "help:imap.server,mark_seen:"
+msgid "Mark emails as seen on fetch."
+msgstr "សម្គាល់ថាបានឃើញ នៅពេលទាញយកអ៊ីមែល។"
+
+msgctxt "help:imap.server,search_mode:"
+msgid ""
+"The criteria to filter when download messages. By default is only take the "
+"unread mesages, but it is possible to take a time interval or a custom "
+"selection"
+msgstr ""
+"លក្ខណៈវិនិច្ឆ័យសម្រាប់ត្រងសារពេលទាញយក។ តាមលំនាំដើម "
+"ប្រព័ន្ធទាញយកតែសារដែលមិនទាន់អាន។ អ្នកក៏អាចជ្រើសចន្លោះពេល "
+"ឬកំណត់ការជ្រើសរើសតាមតម្រូវការ។"
+
+msgctxt "help:imap.server,timeout:"
+msgid "Time to wait until connection is established. In seconds."
+msgstr "រយៈពេលរង់ចាំការតភ្ជាប់ គិតជាវិនាទី។"
+
+msgctxt "help:imap.server,verify_certificate:"
+msgid ""
+"Disabling verification keeps encryption but does not verify the identity of "
+"the mail server."
+msgstr ""
+"ការបិទការផ្ទៀងផ្ទាត់នៅតែរក្សាការអ៊ិនគ្រីប "
+"ប៉ុន្តែមិនផ្ទៀងផ្ទាត់អត្តសញ្ញាណម៉ាស៊ីនមេសំបុត្រទេ។"
+
+msgctxt "model:imap.server,name:"
+msgid "IMAP Server"
+msgstr "ម៉ាស៊ីនមេ IMAP"
+
+msgctxt "model:imap.server.oauth.credentials,name:"
+msgid "Oauth Credentials"
+msgstr "ព័ត៌មានបញ្ជាក់អត្តសញ្ញាណ OAuth"
+
+msgctxt "model:ir.action,name:act_imap_server"
+msgid "IMAP Server"
+msgstr "ម៉ាស៊ីនមេ IMAP"
+
+msgctxt "model:ir.message,text:connection_error"
+msgid "IMAP connection test failed."
+msgstr "ការសាកល្បងតភ្ជាប់ IMAP បានបរាជ័យ។"
+
+#, python-format
+msgctxt "model:ir.message,text:connection_successful"
+msgid "Successful IMAP test connection using account \"%(account)s\"."
+msgstr "ការសាកល្បងតភ្ជាប់ IMAP ដោយប្រើគណនី «%(account)s» បានជោគជ័យ។"
+
+#, python-format
+msgctxt "model:ir.message,text:fetch_error"
+msgid ""
+"Error IMAP Server:\n"
+"Could not get id \"%(email)s\" messages.\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"មានកំហុសម៉ាស៊ីនមេ IMAP៖\n"
+"មិនអាចទាញយកលេខសម្គាល់សារ «%(email)s» បានទេ។\n"
+"\n"
+"%(msg)s"
+
+#, python-format
+msgctxt "model:ir.message,text:general_error"
+msgid ""
+"Error IMAP Server:\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"មានកំហុសម៉ាស៊ីនមេ IMAP៖\n"
+"\n"
+"%(msg)s"
+
+#, python-format
+msgctxt "model:ir.message,text:login_error"
+msgid ""
+"Error IMAP Server:\n"
+"Login with user \"%(user)s\" failed.\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"មានកំហុសម៉ាស៊ីនមេ IMAP៖\n"
+"មិនអាចចូលដោយប្រើឈ្មោះអ្នកប្រើ «%(user)s» បានទេ។\n"
+"\n"
+"%(msg)s"
+
+msgctxt "model:ir.message,text:msg_oauth_missing"
+msgid "The IMAP is set to use oauth authentication and the token is missing."
+msgstr "IMAP ត្រូវបានកំណត់ឱ្យប្រើការផ្ទៀងផ្ទាត់ OAuth ប៉ុន្តែបាត់ថូខិន។"
+
+msgctxt "model:ir.message,text:msg_ssl_starttls"
+msgid "SSL and STARTTLS cannot be enabled at the same time."
+msgstr "មិនអាចបើក SSL និង STARTTLS ក្នុងពេលតែមួយបានទេ។"
+
+#, python-format
+msgctxt "model:ir.message,text:search_error"
+msgid ""
+"Error IMAP Server:\n"
+"Could not search \"%(criteria)s\" messages.\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"មានកំហុសម៉ាស៊ីនមេ IMAP៖\n"
+"មិនអាចស្វែងរកសារតាមលក្ខណៈវិនិច្ឆ័យ «%(criteria)s» បានទេ។\n"
+"\n"
+"%(msg)s"
+
+#, python-format
+msgctxt "model:ir.message,text:select_error"
+msgid ""
+"Error IMAP Server:\n"
+"Could not select \"%(folder)s\" mailbox.\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"មានកំហុសម៉ាស៊ីនមេ IMAP៖\n"
+"មិនអាចជ្រើសប្រអប់សំបុត្រ «%(folder)s» បានទេ។\n"
+"\n"
+"%(msg)s"
+
+#, python-format
+msgctxt "model:ir.message,text:test_details"
+msgid ""
+"IMAP test connection Details:\n"
+"\n"
+"%(msg)s"
+msgstr ""
+"ព័ត៌មានលម្អិតនៃការសាកល្បងតភ្ជាប់ IMAP៖\n"
+"\n"
+"%(msg)s"
+
+msgctxt "model:ir.model.button,string:imap_done_button"
+msgid "Done"
+msgstr "បានបញ្ចប់"
+
+msgctxt "model:ir.model.button,string:imap_draft_button"
+msgid "Draft"
+msgstr "សេចក្តីព្រាង"
+
+msgctxt "model:ir.model.button,string:imap_get_mails_button"
+msgid "Get Mails"
+msgstr "ទាញយកអ៊ីមែល"
+
+msgctxt "model:ir.model.button,string:imap_google_oauth"
+msgid "Google OAuth"
+msgstr "Google OAuth"
+
+msgctxt "model:ir.model.button,string:imap_outlook_oauth"
+msgid "Outlook OAuth"
+msgstr "Outlook OAuth"
+
+msgctxt "model:ir.model.button,string:imap_test_button"
+msgid "Test"
+msgstr "សាកល្បង"
+
+msgctxt "model:ir.ui.menu,name:menu_imap"
+msgid "IMAP"
+msgstr "IMAP"
+
+msgctxt "model:ir.ui.menu,name:menu_imap_server"
+msgid "IMAP Server"
+msgstr "ម៉ាស៊ីនមេ IMAP"
+
+msgctxt "model:res.group,name:group_imap"
+msgid "IMAP"
+msgstr "IMAP"
+
+msgctxt "model:res.group,name:group_imap_admin"
+msgid "IMAP Administration"
+msgstr "ការគ្រប់គ្រង IMAP"
+
+msgctxt "selection:imap.server,action_after_read:"
+msgid "Delete messages"
+msgstr "លុបសារ"
+
+msgctxt "selection:imap.server,action_after_read:"
+msgid "Move to a folder"
+msgstr "ផ្លាស់ទីទៅថតមួយ"
+
+msgctxt "selection:imap.server,action_after_read:"
+msgid "Nothing"
+msgstr "គ្មានសកម្មភាព"
+
+msgctxt "selection:imap.server,search_mode:"
+msgid "Custom"
+msgstr "កំណត់តាមតម្រូវការ"
+
+msgctxt "selection:imap.server,search_mode:"
+msgid "Time Interval"
+msgstr "ចន្លោះពេល"
+
+msgctxt "selection:imap.server,search_mode:"
+msgid "Unseen"
+msgstr "មិនទាន់បានឃើញ"
+
+msgctxt "selection:imap.server,state:"
+msgid "Done"
+msgstr "បានបញ្ចប់"
+
+msgctxt "selection:imap.server,state:"
+msgid "Draft"
+msgstr "សេចក្តីព្រាង"
+
+msgctxt "selection:imap.server,types:"
+msgid "Generic"
+msgstr "ទូទៅ"
+
+msgctxt "selection:imap.server,types:"
+msgid "Google"
+msgstr "Google"
+
+msgctxt "selection:imap.server,types:"
+msgid "Outlook"
+msgstr "Outlook"
+
+msgctxt "view:imap.server:"
+msgid "Login Information"
+msgstr "ព័ត៌មានសម្រាប់ចូល"
+
+msgctxt "view:imap.server:"
+msgid "Server Information"
+msgstr "ព័ត៌មានម៉ាស៊ីនមេ"
